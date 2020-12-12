@@ -79,6 +79,7 @@ class TestIndexView(TestCase):
         self.assertGreater(year_post1, year_post3)
         self.assertGreater(year_post2, year_post3)
 
+
 class TestAddPostView(TestCase):
 
     """ Things to test: """
@@ -234,7 +235,67 @@ class TestEditPostView(TestCase):
         self.assertRedirects(response, redirect_url)
 
 
+class TestPublishView(TestCase):
+    """
+    Things to test:
+    - Are non-logged-in users blocked?
+    For logged in users:
+    - Does the view change the post's status to 'published'?
+    - Is a published date assigned?
+    - Is the user redirected to the post detail page?
+    """
 
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create(
+            username='user123',
+            password='password456'
+        )
+        cls.post = Post.objects.create(
+            title='my title',
+            body='post body',
+            author=cls.user
+        )
+        cls.client = Client()
+        cls.url = '/user123/my-title/publish'
+
+    def test_login_requirement(self):
+        """ Tests a non-logged-in user is redirected to the login page"""
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 302)
+        # TO DO:
+        # Test redirect to login page when login page exists
+
+    def test_published_status(self):
+        """ Tests a post's status is changed to published """
+        user = User.objects.get(username='user123')
+        self.client.force_login(user)
+        self.client.get(self.url)
+
+        post = Post.objects.get(
+            author=user,
+            title='my title'
+        )
+        self.assertEqual(post.status, 'published')
+
+    def test_published_status(self):
+        """ Tests a post has a publication date """
+        user = User.objects.get(username='user123')
+        self.client.force_login(user)
+        self.client.get(self.url)
+
+        post = Post.objects.get(
+            author=user,
+            title='my title'
+        )
+
+        now = datetime.datetime.now()
+
+        self.assertIsInstance(post.published, datetime.datetime )
+        self.assertEqual(now.year, post.published.year)
+        self.assertEqual(now.month, post.published.month)
+        self.assertEqual(now.day, post.published.day)
 
 
 

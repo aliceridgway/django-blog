@@ -1,10 +1,11 @@
-from django.shortcuts import render
-from django.http import HttpResponse
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import CreateView, UpdateView
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Post
-# Create your views here.
+import datetime
 
 def index(request):
 
@@ -24,8 +25,24 @@ def draft(request, username, slug):
 
     return render(request, 'blog/draft.html', context)
 
+@login_required
 def publish_post(request, username, slug):
-    return HttpResponse('hello from publish post')
+    """ Changes the status to published and assigns a published date """
+
+    post = get_object_or_404(Post, author__username=username, slug=slug)
+    post.status = 'published'
+    post.published = datetime.datetime.now()
+    post.save()
+
+    redirect_url = reverse('post_detail', args=[username, slug])
+
+    return HttpResponseRedirect(redirect_url)
+
+def post_detail(request, username, slug):
+    """ Displays a post """
+
+    return HttpResponse('Hi from post detail')
+
 
 class AddPost(LoginRequiredMixin, CreateView):
     model = Post
