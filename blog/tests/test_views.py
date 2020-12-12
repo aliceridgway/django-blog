@@ -312,7 +312,8 @@ class TestPublishView(TestCase):
 class TestPostDetail(TestCase):
     """
     Things to test:
-    - A user is shown a 404 for a draft post
+    - A non-logged-in user is shown a 404 for a draft post
+    - A logged in user attempting to see their own draft post is redirected to drafts page
     - A GET request is successful for published posts
     - Context contains a post
     """
@@ -322,6 +323,10 @@ class TestPostDetail(TestCase):
         cls.user = User.objects.create(
             username='user123',
             password='password456'
+        )
+        cls.user2 = User.objects.create(
+            username='user2',
+            password='password123'
         )
         cls.draft_post = Post.objects.create(
             title='my draft title',
@@ -338,14 +343,18 @@ class TestPostDetail(TestCase):
         cls.client = Client()
 
     def test_draft_404(self):
-        """ Tests users cannot view draft posts and get 404 instead """
+        """
+        Tests users cannot view draft posts and get 404 instead
+        """
         post_detail_url = reverse('post_detail', args=[self.draft_post.author.username, self.draft_post.slug])
         response = self.client.get(post_detail_url)
 
         self.assertEqual(response.status_code, 404)
 
     def test_published_200(self):
-        """ Tests that a request for a published post is successful """
+        """
+        Tests that a request for a published post is successful
+        """
         post_detail_url = reverse('post_detail', args=[self.published_post.author.username, self.published_post.slug])
 
         response = self.client.get(post_detail_url)
@@ -353,8 +362,36 @@ class TestPostDetail(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed('blog/post_detail.html')
 
+    def test_user_draft_redirect(self):
+        """
+        Tests that a logged-in user attempting to view their own unpublished post is redirected to the drafts page.
+        """
+        user = User.objects.get(username='user123')
+        self.client.force_login(user)
+
+        post_detail_url = reverse('post_detail', args=[self.draft_post.author.username, self.draft_post.slug])
+        response = self.client.get(post_detail_url)
+
+        redirect_url = reverse('draft', args=[self.draft_post.author.username, self.draft_post.slug])
+
+        self.assertRedirects(response, redirect_url)
+
+    def test_user_draft_redirect_gotcha(self):
+        """
+        Tests that a logged in user who isn't the post author gets a 404
+        """
+        user = User.objects.get(username='user2')
+        self.client.force_login(user)
+
+        post_detail_url = reverse('post_detail', args=[self.draft_post.author.username, self.draft_post.slug])
+        response = self.client.get(post_detail_url)
+
+        self.assertEqual(response.status_code, 404)
+
     def test_post_detail_context(self):
-        """ Tests that there is a post in the response context """
+        """
+        Tests that there is a post in the response context
+        """
         post_detail_url = reverse('post_detail', args=[self.published_post.author.username, self.published_post.slug])
 
         response = self.client.get(post_detail_url)

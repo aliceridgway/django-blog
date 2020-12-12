@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.views.generic import CreateView, UpdateView
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -43,15 +43,28 @@ def publish_post(request, username, slug):
     return HttpResponseRedirect(redirect_url)
 
 def post_detail(request, username, slug):
-    """ Displays a post """
-    post = get_object_or_404(Post, author__username=username, slug=slug, status='published')
+    """
+    Displays a post if published.
+    If post is draft, user gets a 404, unless they are the author.
+    If draft and user is author, then they are redirected to their draft.
+    """
 
-    context = {
-        'page_title': post.title,
-        'post': post
-    }
+    post = get_object_or_404(Post, author__username=username, slug=slug)
 
-    return render(request, 'blog/post_detail.html', context)
+    if post.status == 'published':
+
+        context = {
+            'page_title': post.title,
+            'post': post
+        }
+        return render(request, 'blog/post_detail.html', context)
+
+    elif request.user == post.author:
+        # Redirect author to their draft post
+        redirect_url = reverse('draft', args=[username, slug])
+        return HttpResponseRedirect(redirect_url)
+    else:
+        raise Http404("Oops! We couldn't find that post")
 
 
 class AddPost(LoginRequiredMixin, CreateView):
