@@ -12,14 +12,18 @@ def index(request):
     posts = Post.objects.filter(status='published').order_by('-published')
 
     context = {
+        'page_title':'The POST',
         'posts': posts
     }
     return render(request, 'blog/index.html', context)
 
+@login_required
 def draft(request, username, slug):
+    """ Provides user with a preview of post in its draft state """
 
     post = Post.objects.get(author__username=username, slug=slug)
     context = {
+        'page_title': post.title,
         'post': post,
     }
 

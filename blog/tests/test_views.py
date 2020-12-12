@@ -141,9 +141,12 @@ class TestAddPostView(TestCase):
 
 
 class TestDraftView(TestCase):
-    """ Things to test """
-    """ 1. Does the GET request work? """
-    """ 2. Does the context include a post? """
+    """
+    Things to test:
+     - Does the GET request work?
+     - Does the context include a post?
+     - Are non-logged-in users barred?
+    """
 
     @classmethod
     def setUpTestData(cls):
@@ -158,10 +161,16 @@ class TestDraftView(TestCase):
         )
         cls.client = Client()
         cls.url = reverse('draft', args=[cls.user.username, cls.post.slug])
-        print(cls.url)
+
+    def test_login_requirement(self):
+        """ Tests that a non-logged-in user is redirected """
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
 
     def test_get_draft(self):
         """ Tests that a GET request works"""
+        user = User.objects.get(username='user123')
+        self.client.force_login(user)
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
@@ -169,6 +178,8 @@ class TestDraftView(TestCase):
 
     def test_draft_context(self):
         """ Tests that there's a post included in the context"""
+        user = User.objects.get(username='user123')
+        self.client.force_login(user)
         response = self.client.get(self.url)
         post = response.context['post']
 
