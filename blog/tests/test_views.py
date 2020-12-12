@@ -174,9 +174,65 @@ class TestDraftView(TestCase):
         self.assertEqual(post.title, 'my title')
         self.assertEqual(post.body, 'post body')
 
-    def test_post_publish(self):
-        """ Tests that a user is redirected to the published post on submit"""
-        response = self.client.post(self.url)
+
+class TestEditPostView(TestCase):
+    """
+    Things to test:
+    1. Are non-logged-in users redirected?
+    2. Do logged in users receive a 200 status code?
+    3. On save, are they redirected to the draft page?
+    4. When the title is updated, does the slug update as well?
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create(
+            username='user123',
+            password='password456'
+        )
+        cls.post = Post.objects.create(
+            title='my title',
+            body='post body',
+            author=cls.user
+        )
+        cls.client = Client()
+        cls.url = '/user123/my-title/edit'
+
+    def test_user_must_be_logged_in(self):
+        """ Tests that a non-logged in user is redirected """
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+
+    def test_get_request(self):
+        """ Tests that a logged in user receives a 200"""
+        user = User.objects.get(username='user123')
+        self.client.force_login(user)
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed('blog/edit.html')
+
+    def test_success_url(self):
+        """
+        Tests that the user is redirected to the draft page on save.
+        Tests that the url's slug is correct for an updated title.
+        """
+
+        user = User.objects.get(username='user123')
+        self.client.force_login(user)
+
+        redirect_url = reverse('draft', args=[user.username, 'new-title'])
+
+        post = {
+            'title':'new title',
+            'body': 'new bit of text',
+            'author': user
+        }
+
+        response = self.client.post(self.url, post)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, redirect_url)
+
 
 
 

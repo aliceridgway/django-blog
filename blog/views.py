@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from django.views.generic import CreateView
+from django.views.generic import CreateView, UpdateView
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Post
@@ -24,6 +24,9 @@ def draft(request, username, slug):
 
     return render(request, 'blog/draft.html', context)
 
+def publish_post(request, username, slug):
+    return HttpResponse('hello from publish post')
+
 class AddPost(LoginRequiredMixin, CreateView):
     model = Post
     template_name = 'blog/add.html'
@@ -36,4 +39,14 @@ class AddPost(LoginRequiredMixin, CreateView):
     def get_success_url(self):
         author = self.object.author
         slug = self.object.slug
-        return reverse('draft', args=[author, slug])
+        return reverse('draft', args=[author.username, slug])
+
+class EditPost(LoginRequiredMixin, UpdateView):
+    model = Post
+    template_name = 'blog/edit.html'
+    fields = ['title', 'body']
+
+    def get_success_url(self):
+        author = self.object.author
+        slug = self.object.slug
+        return reverse('draft', args=[author.username, slug])

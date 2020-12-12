@@ -17,7 +17,7 @@ class Post(models.Model):
 
     title = models.CharField(max_length=255)
     body = models.TextField()
-    slug = AutoSlugField(populate_from='title', unique_with=['author__username'])
+    slug = AutoSlugField(populate_from='title', unique_with=['author__username'], always_update=True)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
     created = models.DateTimeField(default=timezone.now)
