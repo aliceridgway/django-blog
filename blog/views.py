@@ -8,6 +8,7 @@ from .models import Post
 import datetime
 
 def index(request):
+    """ Displays a list of posts """
 
     posts = Post.objects.filter(status='published').order_by('-published')
 
@@ -68,6 +69,8 @@ def post_detail(request, username, slug):
 
 
 class AddPost(LoginRequiredMixin, CreateView):
+    """ Allows users to add posts with UI """
+
     model = Post
     template_name = 'blog/add.html'
     fields = ['title', 'body']
@@ -82,6 +85,8 @@ class AddPost(LoginRequiredMixin, CreateView):
         return reverse('draft', args=[author.username, slug])
 
 class EditPost(LoginRequiredMixin, UpdateView):
+    """ Allows users to add posts with UI """
+
     model = Post
     template_name = 'blog/edit.html'
     fields = ['title', 'body']
