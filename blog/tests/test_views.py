@@ -139,4 +139,53 @@ class TestAddPostView(TestCase):
         self.assertRedirects(response, '/testuser/my-title/draft')
 
 
+class TestDraftView(TestCase):
+    """ Things to test """
+    """ 1. Does the GET request work? """
+    """ 2. Does the context include a post? """
+    """ 3. When the post is published, does the status change to published? """
+    """ 4. Does publishing assign a published date?"""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create(
+            username='user123',
+            password='password456'
+        )
+        cls.post = Post.objects.create(
+            title='my title',
+            body='post body',
+            author=cls.user
+        )
+        cls.client = Client()
+        cls.url = '/user123/my-title/draft'
+
+    def test_get_draft(self):
+        """ Tests that a GET request works"""
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed('blog/draft.html')
+
+    def test_draft_context(self):
+        """ Tests that there's a post included in the context"""
+        response = self.client.get(self.url)
+        post = response.context['post']
+
+        self.assertEqual(post.title, 'my title')
+        self.assertEqual(post.body, 'post body')
+
+    def test_post_publish(self):
+        """ Tests that a user is redirected to the published post on submit"""
+        response = self.client.post(self.url)
+
+        self.assertRedirects(response,'/user123/my-title')
+
+    def test_post_state(self):
+        """ Tests that the post status is updated when published"""
+
+        response = self.client.post(self.url)
+        
+
+
 

@@ -16,7 +16,13 @@ def index(request):
     return render(request, 'blog/index.html', context)
 
 def draft(request, username, slug):
-    return render(request, 'blog/draft.html')
+
+    post = Post.objects.get(author__username=username, slug=slug)
+    context = {
+        'post': post,
+    }
+
+    return render(request, 'blog/draft.html', context)
 
 class AddPost(LoginRequiredMixin, CreateView):
     model = Post
