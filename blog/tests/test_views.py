@@ -298,4 +298,56 @@ class TestPublishView(TestCase):
         self.assertEqual(now.day, post.published.day)
 
 
+class TestPostDetail(TestCase):
+    """
+    Things to test:
+    - A user is shown a 404 for a draft post
+    - A GET request is successful for published posts
+    - Context contains a post
+    """
 
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create(
+            username='user123',
+            password='password456'
+        )
+        cls.draft_post = Post.objects.create(
+            title='my draft title',
+            body='post body',
+            author=cls.user
+        )
+        cls.published_post = Post.objects.create(
+            title='my published title',
+            body='post body',
+            author=cls.user,
+            status='published',
+            published=datetime.datetime.now()
+        )
+        cls.client = Client()
+
+    def test_draft_404(self):
+        """ Tests users cannot view draft posts and get 404 instead """
+        post_detail_url = reverse('post_detail', args=[self.draft_post.author.username, self.draft_post.slug])
+        response = self.client.get(post_detail_url)
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_published_200(self):
+        """ Tests that a request for a published post is successful """
+        post_detail_url = reverse('post_detail', args=[self.published_post.author.username, self.published_post.slug])
+
+        response = self.client.get(post_detail_url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed('blog/post_detail.html')
+
+    def test_post_detail_context(self):
+        """ Tests that there is a post in the response context """
+        post_detail_url = reverse('post_detail', args=[self.published_post.author.username, self.published_post.slug])
+
+        response = self.client.get(post_detail_url)
+        post = response.context.get('post', {})
+
+        self.assertIn('post', response.context)
+        self.assertEqual(post.title, 'my published title')

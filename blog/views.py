@@ -40,8 +40,14 @@ def publish_post(request, username, slug):
 
 def post_detail(request, username, slug):
     """ Displays a post """
+    post = get_object_or_404(Post, author__username=username, slug=slug, status='published')
 
-    return HttpResponse('Hi from post detail')
+    context = {
+        'page_title': post.title,
+        'post': post
+    }
+
+    return render(request, 'blog/post_detail.html', context)
 
 
 class AddPost(LoginRequiredMixin, CreateView):
