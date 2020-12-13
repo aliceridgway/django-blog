@@ -4,7 +4,6 @@ from django.utils import timezone
 from django.utils.text import slugify
 from django.contrib.auth.models import User
 from django.conf import settings
-from .helpers import get_post_slug
 from autoslug import AutoSlugField
 from ckeditor.fields import RichTextField
 
