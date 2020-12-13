@@ -5,6 +5,7 @@
 <!-- safe flag required on post.body to correctly render content from the rich text editor -->
 
 <div class="container">
+    <img class="img-fluid" src="{{ post.feature_image.url }}" alt="{{ post.title }}">
     <h1>{{ post.title }}</h1>
     <p>{{ post.body | safe}}</p>
 </div>

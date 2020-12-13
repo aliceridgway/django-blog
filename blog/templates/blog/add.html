@@ -2,13 +2,13 @@
 
 {% block content %}
 
-<!-- {{ form.media }} required for rich text editor -->
-<!-- {{ form | crispy }} required for Crispy Forms to do the styling -->
+<!-- form.media required for rich text editor -->
+<!-- form | crispy required for Crispy Forms to do the styling -->
 
 <div class="container">
     <h3>New Post</h3>
     {% load crispy_forms_tags %}
-    <form method="post" novalidate>
+    <form method="post" novalidate enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.media }}
         {{ form|crispy }}

@@ -8,7 +8,16 @@ from .helpers import get_post_slug
 from autoslug import AutoSlugField
 from ckeditor.fields import RichTextField
 
-# Create your models here.
+def get_filename(self, filename):
+    """ Generates a custom filename for uploads based on author's username and the post's creation date """
+
+    extension = filename.split('.')[-1]
+    t = self.created
+    datetime_str = f"{t.year}-{t.month}-{t.day}-{t.hour}{t.minute}{t.second}"
+
+    return f"uploads/{self.author.username}_{datetime_str}.{extension}"
+
+
 class Post(models.Model):
 
     STATUS_CHOICES = (
@@ -17,6 +26,7 @@ class Post(models.Model):
     )
 
     title = models.CharField(max_length=255)
+    feature_image = models.ImageField(blank=True, null=True, upload_to=get_filename, default='thePOST-default.jpg')
     body = RichTextField(blank=True, null=True)
     slug = AutoSlugField(populate_from='title', unique_with=['author__username'], always_update=True)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -27,6 +37,3 @@ class Post(models.Model):
 
     def __str__(self):
         return f"{self.title} | by {self.author.username}"
-
-    # def get_absolute_url(self):
-    #     return reverse('blog:post_detail', args=[self.publish.year, self.publish.month, self.publish.day, self.slug])

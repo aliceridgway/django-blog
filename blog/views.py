@@ -80,7 +80,7 @@ class AddPost(LoginRequiredMixin, CreateView):
 
     model = Post
     template_name = 'blog/add.html'
-    fields = ['title', 'body']
+    fields = ['title', 'feature_image', 'body']
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -97,7 +97,7 @@ class EditPost(LoginRequiredMixin, UpdateView):
 
     model = Post
     template_name = 'blog/edit.html'
-    fields = ['title', 'body']
+    fields = ['title', 'feature_image', 'body']
 
     # Make sure posts can only be edited by the author!
     def dispatch(self, request, *args, **kwargs):

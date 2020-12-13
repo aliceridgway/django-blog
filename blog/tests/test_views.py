@@ -122,7 +122,7 @@ class TestAddPostView(TestCase):
         response = self.client.get(self.url)
         form = response.context_data['form']
 
-        self.assertEqual(len(form.fields), 2)
+        self.assertEqual(len(form.fields), 3)
         self.assertIn('title', form.fields)
         self.assertIn('body', form.fields)
 
