@@ -2,11 +2,15 @@
 
 {% block content %}
 
+<!-- {{ form.media }} required for rich text editor -->
+<!-- {{ form | crispy }} required for Crispy Forms to do the styling -->
+
 <div class="container">
     <h3>Edit Post</h3>
     {% load crispy_forms_tags %}
     <form method="post" novalidate>
         {% csrf_token %}
+        {{ form.media }}
         {{ form|crispy }}
         <input type="submit" class="btn btn-primary" value="Save">
     </form>

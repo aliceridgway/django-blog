@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from .helpers import get_post_slug
 from autoslug import AutoSlugField
+from ckeditor.fields import RichTextField
 
 # Create your models here.
 class Post(models.Model):
@@ -16,7 +17,7 @@ class Post(models.Model):
     )
 
     title = models.CharField(max_length=255)
-    body = models.TextField()
+    body = RichTextField(blank=True, null=True)
     slug = AutoSlugField(populate_from='title', unique_with=['author__username'], always_update=True)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')

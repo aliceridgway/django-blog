@@ -10,7 +10,7 @@
     </div>
     <h1>{{post.title}}</h1>
     <small>By {{post.author.username}}</small>
-    <p>{{post.body}}</p>
+    <p>{{post.body | safe}}</p>
 </div>
 
 

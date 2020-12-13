@@ -2,9 +2,11 @@
 
 {% block content %}
 
+<!-- safe flag required on post.body to correctly render content from the rich text editor -->
+
 <div class="container">
-    <h1>{{post.title}}</h1>
-    <p>{{post.body}}</p>
+    <h1>{{ post.title }}</h1>
+    <p>{{ post.body | safe}}</p>
 </div>
 
 
