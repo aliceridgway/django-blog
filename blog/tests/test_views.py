@@ -254,15 +254,14 @@ class TestEditPostView(TestCase):
         Tests that the url's slug is correct for an updated title.
         """
 
-        user = User.objects.get(username='user123')
-        self.client.force_login(user)
+        self.client.force_login(self.user)
 
         redirect_url = reverse('draft', args=[user.username, 'new-title'])
 
         post = {
             'title':'new title',
             'body': 'new bit of text',
-            'author': user
+            'author': self.user
         }
 
         response = self.client.post(self.url, post)
