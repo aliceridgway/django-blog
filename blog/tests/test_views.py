@@ -149,7 +149,7 @@ class TestDraftView(TestCase):
      - Does the context include a post?
      - Does the logged in author get a 200?
      - Do logged in users who aren't the author get a 404?
-     - Do non-logged in users get a 404?
+     - Do non-logged in users get redirected?
     """
 
     @classmethod
@@ -256,7 +256,7 @@ class TestEditPostView(TestCase):
 
         self.client.force_login(self.user)
 
-        redirect_url = reverse('draft', args=[user.username, 'new-title'])
+        redirect_url = reverse('draft', args=[self.user.username, 'new-title'])
 
         post = {
             'title':'new title',
@@ -277,7 +277,7 @@ class TestPublishView(TestCase):
     - Are users who aren't the author blocked?
     - Does the view change the post's status to 'published'?
     - Is a published date assigned?
-    - Is the user redirected to the post detail page?
+    - On publish, is the author redirected to the post detail page?
     """
 
     @classmethod
@@ -299,12 +299,10 @@ class TestPublishView(TestCase):
         cls.url = '/user123/my-title/publish'
 
     def test_login_requirement(self):
-        """ Tests a non-logged-in user is redirected to the login page"""
+        """ Tests a non-logged-in user gets redirected"""
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 302)
-        # TO DO:
-        # Test redirect to login page when login page exists
 
     def test_nonauthor_blocked(self):
         """ Tests that users cannot publish posts from another author """
