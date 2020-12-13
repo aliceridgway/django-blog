@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.views.generic import CreateView, UpdateView
+from django.views.generic import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Post
@@ -35,13 +35,17 @@ def publish_post(request, username, slug):
     """ Changes the status to published and assigns a published date """
 
     post = get_object_or_404(Post, author__username=username, slug=slug)
-    post.status = 'published'
-    post.published = datetime.datetime.now()
-    post.save()
 
-    redirect_url = reverse('post_detail', args=[username, slug])
+    if request.user != post.author:
+        raise Http404("Oops! We couldn't find the page you were looking for.")
+    else:
+        post.status = 'published'
+        post.published = datetime.datetime.now()
+        post.save()
 
-    return HttpResponseRedirect(redirect_url)
+        redirect_url = reverse('post_detail', args=[username, slug])
+
+        return HttpResponseRedirect(redirect_url)
 
 def post_detail(request, username, slug):
     """
@@ -84,6 +88,7 @@ class AddPost(LoginRequiredMixin, CreateView):
         slug = self.object.slug
         return reverse('draft', args=[author.username, slug])
 
+
 class EditPost(LoginRequiredMixin, UpdateView):
     """ Allows users to add posts with UI """
 
@@ -91,7 +96,29 @@ class EditPost(LoginRequiredMixin, UpdateView):
     template_name = 'blog/edit.html'
     fields = ['title', 'body']
 
+    # Make sure posts can only be deleted by the author!
+    def dispatch(self, request, *args, **kwargs):
+        post = self.get_object()
+        if post.author != self.request.user:
+            raise Http404("Oops! We couldn't find that page.")
+        return super(EditPost, self).dispatch(request, *args, **kwargs)
+
     def get_success_url(self):
         author = self.object.author
         slug = self.object.slug
         return reverse('draft', args=[author.username, slug])
+
+
+class DeletePost(LoginRequiredMixin, DeleteView):
+    """ Allows authors to delete their posts """
+    model = Post
+    template_name = 'blog/delete.html'
+    success_url = reverse_lazy('index')
+
+    # Make sure posts can only be deleted by the author!
+    def dispatch(self, request, *args, **kwargs):
+        post = self.get_object()
+        if post.author != self.request.user:
+            redirect_url = reverse('post_detail', args=[post.author.username, post.slug])
+            return HttpResponseRedirect(redirect_url)
+        return super(DeletePost, self).dispatch(request, *args, **kwargs)

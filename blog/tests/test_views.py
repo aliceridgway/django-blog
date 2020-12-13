@@ -190,16 +190,21 @@ class TestDraftView(TestCase):
 class TestEditPostView(TestCase):
     """
     Things to test:
-    1. Are non-logged-in users redirected?
-    2. Do logged in users receive a 200 status code?
-    3. On save, are they redirected to the draft page?
-    4. When the title is updated, does the slug update as well?
+    - Are non-logged-in users redirected?
+    - Does the post author receive a 200 status code?
+    - Do logged-in users who aren't the author get a 404?
+    - On save, are they redirected to the draft page?
+    - When the title is updated, does the slug update as well?
     """
 
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create(
             username='user123',
+            password='password456'
+        )
+        cls.hacker = User.objects.create(
+            username='hacker',
             password='password456'
         )
         cls.post = Post.objects.create(
@@ -211,18 +216,23 @@ class TestEditPostView(TestCase):
         cls.url = '/user123/my-title/edit'
 
     def test_user_must_be_logged_in(self):
-        """ Tests that a non-logged in user is redirected """
+        """ Tests that a non-logged users are blocked """
         response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 404)
 
     def test_get_request(self):
-        """ Tests that a logged in user receives a 200"""
-        user = User.objects.get(username='user123')
-        self.client.force_login(user)
+        """ Tests that the post author receives a 200"""
+        self.client.force_login(self.user)
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed('blog/edit.html')
+
+    def test_non_authors_get_404(self):
+        self.client.force_login(self.hacker)
+
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
 
     def test_success_url(self):
         """
@@ -251,6 +261,7 @@ class TestPublishView(TestCase):
     Things to test:
     - Are non-logged-in users blocked?
     For logged in users:
+    - Are users who aren't the author blocked?
     - Does the view change the post's status to 'published'?
     - Is a published date assigned?
     - Is the user redirected to the post detail page?
@@ -260,6 +271,10 @@ class TestPublishView(TestCase):
     def setUpTestData(cls):
         cls.user = User.objects.create(
             username='user123',
+            password='password456'
+        )
+        cls.hacker = User.objects.create(
+            username='hacker',
             password='password456'
         )
         cls.post = Post.objects.create(
@@ -277,6 +292,17 @@ class TestPublishView(TestCase):
         self.assertEqual(response.status_code, 302)
         # TO DO:
         # Test redirect to login page when login page exists
+
+    def test_nonauthor_blocked(self):
+        """ Tests that users cannot publish posts from another author """
+        self.client.force_login(self.hacker)
+        response = self.client.get(self.url)
+
+        post = Post.objects.get(title='my title')
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(post.status, 'draft')
+
 
     def test_published_status(self):
         """ Tests a post's status is changed to published """
@@ -399,3 +425,56 @@ class TestPostDetail(TestCase):
 
         self.assertIn('post', response.context)
         self.assertEqual(post.title, 'my published title')
+
+class TestDeletePost(TestCase):
+    """
+    Things to test:
+    - Are non-logged in users redirected?
+    - Does the get request work?
+    - Is access restricted to just the author?
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.user1 = User.objects.create(
+            username='user1',
+            password='password456'
+        )
+        cls.user2 = User.objects.create(
+            username='user2',
+            password='password456'
+        )
+        cls.post = Post.objects.create(
+            title='my title',
+            body='post body',
+            author=cls.user1,
+            status='published'
+        )
+        cls.client = Client()
+        cls.url = reverse('delete_post', args=[cls.user1.username, 'my-title'])
+
+    def test_login_requirement(self):
+        """
+        Tests a non-logged in user gets redirected
+        """
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 302)
+
+    def test_author_gets_200(self):
+        """ Tests that the logged in author gets a 200 response """
+        self.client.force_login(self.user1)
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_nonauthor_gets_302(self):
+        """ Tests that a logged in user who is not the author gets redirected to the post detail page """
+        self.client.force_login(self.user2)
+
+        redirect_url = reverse('post_detail', args=[self.post.author.username, self.post.slug])
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, redirect_url)
