@@ -306,24 +306,24 @@ class TestPublishView(TestCase):
 
     def test_published_status(self):
         """ Tests a post's status is changed to published """
-        user = User.objects.get(username='user123')
-        self.client.force_login(user)
+
+        self.client.force_login(self.user)
         self.client.get(self.url)
 
         post = Post.objects.get(
-            author=user,
+            author=self.user,
             title='my title'
         )
         self.assertEqual(post.status, 'published')
 
     def test_published_status(self):
         """ Tests a post has a publication date """
-        user = User.objects.get(username='user123')
-        self.client.force_login(user)
+
+        self.client.force_login(self.user)
         self.client.get(self.url)
 
         post = Post.objects.get(
-            author=user,
+            author=self.user,
             title='my title'
         )
 
@@ -350,8 +350,8 @@ class TestPostDetail(TestCase):
             username='user123',
             password='password456'
         )
-        cls.user2 = User.objects.create(
-            username='user2',
+        cls.hacker = User.objects.create(
+            username='hacker',
             password='password123'
         )
         cls.draft_post = Post.objects.create(
@@ -392,8 +392,7 @@ class TestPostDetail(TestCase):
         """
         Tests that a logged-in user attempting to view their own unpublished post is redirected to the drafts page.
         """
-        user = User.objects.get(username='user123')
-        self.client.force_login(user)
+        self.client.force_login(self.user)
 
         post_detail_url = reverse('post_detail', args=[self.draft_post.author.username, self.draft_post.slug])
         response = self.client.get(post_detail_url)
@@ -402,12 +401,12 @@ class TestPostDetail(TestCase):
 
         self.assertRedirects(response, redirect_url)
 
-    def test_user_draft_redirect_gotcha(self):
+    def test_nonauthors_cannot_see_drafts(self):
         """
         Tests that a logged in user who isn't the post author gets a 404
         """
-        user = User.objects.get(username='user2')
-        self.client.force_login(user)
+
+        self.client.force_login(self.hacker)
 
         post_detail_url = reverse('post_detail', args=[self.draft_post.author.username, self.draft_post.slug])
         response = self.client.get(post_detail_url)
@@ -425,6 +424,7 @@ class TestPostDetail(TestCase):
 
         self.assertIn('post', response.context)
         self.assertEqual(post.title, 'my published title')
+
 
 class TestDeletePost(TestCase):
     """
