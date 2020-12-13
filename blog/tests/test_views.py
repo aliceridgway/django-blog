@@ -450,45 +450,43 @@ class TestDeletePost(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.user1 = User.objects.create(
-            username='user1',
+        cls.user = User.objects.create(
+            username='user123',
             password='password456'
         )
-        cls.user2 = User.objects.create(
-            username='user2',
+        cls.hacker = User.objects.create(
+            username='hacker',
             password='password456'
         )
         cls.post = Post.objects.create(
             title='my title',
             body='post body',
-            author=cls.user1,
+            author=cls.user,
             status='published'
         )
         cls.client = Client()
-        cls.url = reverse('delete_post', args=[cls.user1.username, 'my-title'])
+        cls.url = reverse('delete_post', args=[cls.user.username, 'my-title'])
 
     def test_login_requirement(self):
         """
-        Tests a non-logged in user gets redirected
+        Tests a non-logged in user gets a 404
         """
         response = self.client.get(self.url)
 
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 404)
 
     def test_author_gets_200(self):
         """ Tests that the logged in author gets a 200 response """
-        self.client.force_login(self.user1)
+        self.client.force_login(self.user)
+
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
 
-    def test_nonauthor_gets_302(self):
-        """ Tests that a logged in user who is not the author gets redirected to the post detail page """
-        self.client.force_login(self.user2)
-
-        redirect_url = reverse('post_detail', args=[self.post.author.username, self.post.slug])
+    def test_nonauthor_gets_404(self):
+        """ Tests that a logged in user who is not the author gets a 404 """
+        self.client.force_login(self.hacker)
 
         response = self.client.get(self.url)
 
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, redirect_url)
+        self.assertEqual(response.status_code, 404)

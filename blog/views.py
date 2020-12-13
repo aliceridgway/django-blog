@@ -93,7 +93,7 @@ class AddPost(LoginRequiredMixin, CreateView):
 
 
 class EditPost(LoginRequiredMixin, UpdateView):
-    """ Allows users to add posts with UI """
+    """ Allows users to edit posts with UI """
 
     model = Post
     template_name = 'blog/edit.html'
@@ -122,6 +122,5 @@ class DeletePost(LoginRequiredMixin, DeleteView):
     def dispatch(self, request, *args, **kwargs):
         post = self.get_object()
         if post.author != self.request.user:
-            redirect_url = reverse('post_detail', args=[post.author.username, post.slug])
-            return HttpResponseRedirect(redirect_url)
+            raise Http404
         return super(DeletePost, self).dispatch(request, *args, **kwargs)
