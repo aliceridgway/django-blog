@@ -17,17 +17,17 @@ class TestIndexView(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        u = User.objects.create_user(
+        user = User.objects.create_user(
             username='user123',
             password='password456'
         )
 
-        Post.objects.create(title='title1', body='body1', author=u, status='draft')
+        Post.objects.create(title='title1', body='body1', author=user, status='draft')
 
         Post.objects.create(
             title='title2',
             body='body2',
-            author=u,
+            author=user,
             status='published',
             published=datetime.datetime(2018,1,1)
         )
@@ -35,7 +35,7 @@ class TestIndexView(TestCase):
         Post.objects.create(
             title='title3',
             body='body3',
-            author=u,
+            author=user,
             status='published',
             published=datetime.datetime(2019,1,1)
         )
@@ -43,7 +43,7 @@ class TestIndexView(TestCase):
         Post.objects.create(
             title='title4',
             body='body4',
-            author=u,
+            author=user,
             status='published',
             published=datetime.datetime(2020,1,1)
         )
@@ -51,18 +51,18 @@ class TestIndexView(TestCase):
         cls.response = Client().get(reverse('index'))
 
     def test_get_index(self):
-        """ Test that a get request to index works and renders the correct template"""
+        """ Tests that a get request to index works and renders the correct template"""
 
         self.assertEquals(self.response.status_code, 200)
         self.assertTemplateUsed('blog/index.html')
 
     def test_context_contains_posts(self):
-        """ tests that there the context contains 'posts' """
+        """ Tests that there the context contains 'posts' """
 
         self.assertIn('posts', self.response.context)
 
     def test_excludes_draft_posts(self):
-        """ Test that the list of posts on the homepage excludes drafts"""
+        """ Tests that the list of posts on the homepage excludes drafts"""
 
         number_of_published_posts = len(self.response.context['posts'])
 
@@ -94,31 +94,31 @@ class TestAddPostView(TestCase):
     def setUpTestData(cls):
         cls.client = Client()
         cls.url = reverse('add')
-        user = User(username='testuser', password='password123')
-        user.save()
+        cls.user = User.objects.create_user(
+            username='user123',
+            password='password456'
+        )
 
     def test_get_add(self):
-        """ Test that a GET request works and renders the correct template"""
+        """ Tests that a GET request works and renders the correct template"""
 
-        user = User.objects.get(username='testuser')
-        self.client.force_login(user)
+        self.client.force_login(self.user)
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed('blog/add.html')
 
     def test_user_must_be_logged_in(self):
-        """ Test that a non-logged in user is redirected """
+        """ Tests that a non-logged in user is redirected """
 
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 302)
 
     def test_form_fields(self):
-        """ Test that only title and body fields are displayed in the user form"""
+        """ Tests that only title and body fields are displayed in the user form"""
 
-        user = User.objects.get(username='testuser')
-        self.client.force_login(user)
+        self.client.force_login(self.user)
         response = self.client.get(self.url)
         form = response.context_data['form']
 
@@ -127,10 +127,9 @@ class TestAddPostView(TestCase):
         self.assertIn('body', form.fields)
 
     def test_success_url(self):
-        """ Test that submitting the form redirects to the preview page """
+        """ Tests that submitting the form redirects to the draft page """
 
-        user = User.objects.get(username='testuser')
-        self.client.force_login(user)
+        self.client.force_login(self.user)
 
         form_data = {
             'title':'my title',
@@ -139,7 +138,7 @@ class TestAddPostView(TestCase):
         response = self.client.post(self.url, data=form_data)
 
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, '/testuser/my-title/draft')
+        self.assertRedirects(response, '/user123/my-title/draft')
 
 
 class TestDraftView(TestCase):
@@ -172,17 +171,20 @@ class TestDraftView(TestCase):
 
     def test_login_requirement(self):
         """ Tests that a non-logged-in user is redirected """
+
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 302)
 
     def test_nonauthor_gets_404(self):
         """ Tests that a logged in user who isn't the author gets a 404 """
+
         self.client.force_login(self.hacker)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 404)
 
     def test_author_gets_200(self):
         """ Tests that a GET request works"""
+
         user = User.objects.get(username='user123')
         self.client.force_login(user)
         response = self.client.get(self.url)
@@ -192,6 +194,7 @@ class TestDraftView(TestCase):
 
     def test_draft_context(self):
         """ Tests that there's a post included in the context"""
+
         user = User.objects.get(username='user123')
         self.client.force_login(user)
         response = self.client.get(self.url)
@@ -231,11 +234,13 @@ class TestEditPostView(TestCase):
 
     def test_user_must_be_logged_in(self):
         """ Tests that a non-logged users are blocked """
+
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 404)
 
     def test_get_request(self):
         """ Tests that the post author receives a 200"""
+
         self.client.force_login(self.user)
         response = self.client.get(self.url)
 
@@ -243,6 +248,8 @@ class TestEditPostView(TestCase):
         self.assertTemplateUsed('blog/edit.html')
 
     def test_non_authors_get_404(self):
+        """ Tests that a logged in user who is not the author gets a 404 """
+
         self.client.force_login(self.hacker)
 
         response = self.client.get(self.url)
@@ -250,8 +257,8 @@ class TestEditPostView(TestCase):
 
     def test_success_url(self):
         """
-        Tests that the user is redirected to the draft page on save.
-        Tests that the url's slug is correct for an updated title.
+        - Tests that the user is redirected to the draft page on save.
+        - Tests that the url's slug is correct for an updated title.
         """
 
         self.client.force_login(self.user)
@@ -300,12 +307,14 @@ class TestPublishView(TestCase):
 
     def test_login_requirement(self):
         """ Tests a non-logged-in user gets redirected"""
+
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 302)
 
     def test_nonauthor_blocked(self):
         """ Tests that users cannot publish posts from another author """
+
         self.client.force_login(self.hacker)
         response = self.client.get(self.url)
 
@@ -313,7 +322,6 @@ class TestPublishView(TestCase):
 
         self.assertEqual(response.status_code, 404)
         self.assertEqual(post.status, 'draft')
-
 
     def test_published_status(self):
         """ Tests a post's status is changed to published """
@@ -380,18 +388,16 @@ class TestPostDetail(TestCase):
         cls.client = Client()
 
     def test_draft_404(self):
-        """
-        Tests users cannot view draft posts and get 404 instead
-        """
+        """ Tests users cannot view draft posts and get 404 instead """
+
         post_detail_url = reverse('post_detail', args=[self.draft_post.author.username, self.draft_post.slug])
         response = self.client.get(post_detail_url)
 
         self.assertEqual(response.status_code, 404)
 
     def test_published_200(self):
-        """
-        Tests that a request for a published post is successful
-        """
+        """ Tests that a request for a published post is successful """
+
         post_detail_url = reverse('post_detail', args=[self.published_post.author.username, self.published_post.slug])
 
         response = self.client.get(post_detail_url)
@@ -400,9 +406,8 @@ class TestPostDetail(TestCase):
         self.assertTemplateUsed('blog/post_detail.html')
 
     def test_user_draft_redirect(self):
-        """
-        Tests that a logged-in user attempting to view their own unpublished post is redirected to the drafts page.
-        """
+        """ Tests that a logged-in user attempting to view their own unpublished post is redirected to the drafts page. """
+
         self.client.force_login(self.user)
 
         post_detail_url = reverse('post_detail', args=[self.draft_post.author.username, self.draft_post.slug])
@@ -413,9 +418,7 @@ class TestPostDetail(TestCase):
         self.assertRedirects(response, redirect_url)
 
     def test_nonauthors_cannot_see_drafts(self):
-        """
-        Tests that a logged in user who isn't the post author gets a 404
-        """
+        """ Tests that a logged in user who isn't the post author gets a 404 """
 
         self.client.force_login(self.hacker)
 
@@ -425,9 +428,7 @@ class TestPostDetail(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_post_detail_context(self):
-        """
-        Tests that there is a post in the response context
-        """
+        """ Tests that there is a post in the response context """
         post_detail_url = reverse('post_detail', args=[self.published_post.author.username, self.published_post.slug])
 
         response = self.client.get(post_detail_url)
@@ -465,25 +466,24 @@ class TestDeletePost(TestCase):
         cls.url = reverse('delete_post', args=[cls.user.username, 'my-title'])
 
     def test_login_requirement(self):
-        """
-        Tests a non-logged in user gets a 404
-        """
+        """ Tests a non-logged in user gets a 404 """
+
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 404)
 
     def test_author_gets_200(self):
         """ Tests that the logged in author gets a 200 response """
-        self.client.force_login(self.user)
 
+        self.client.force_login(self.user)
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
 
     def test_nonauthor_gets_404(self):
         """ Tests that a logged in user who is not the author gets a 404 """
-        self.client.force_login(self.hacker)
 
+        self.client.force_login(self.hacker)
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 404)
