@@ -8,11 +8,12 @@ from django.contrib.auth.models import User
 
 class TestIndexView(TestCase):
 
-    """ Things to test: """
-    """ 1. Does the GET request work?"""
-    """ 2. Does the context contain a key for 'posts'?"""
-    """ 3. Are draft posts excluded? """
-    """ 4. Are posts ordered by date (most recent first)? """
+    """ Things to test:
+    1. Does the GET request work?
+    2. Does the context contain a key for 'posts'?
+    3. Are draft posts excluded?
+    4. Are posts ordered by date (most recent first)?
+    """
 
     @classmethod
     def setUpTestData(cls):
@@ -82,11 +83,12 @@ class TestIndexView(TestCase):
 
 class TestAddPostView(TestCase):
 
-    """ Things to test: """
-    """ 1. Does the url work?"""
-    """ 2. If a user isn't logged in, are they redirected?"""
-    """ 3. Are the correct form fields displayed? """
-    """ 4. When a post is saved, does it redirect to the preview page? """
+    """ Things to test:
+    - Does the url work?
+    - If a user isn't logged in, are they redirected?
+    - Are the correct form fields displayed?
+    - When a post is saved, does it redirect to the preview page?
+    """
 
     @classmethod
     def setUpTestData(cls):
@@ -145,13 +147,19 @@ class TestDraftView(TestCase):
     Things to test:
      - Does the GET request work?
      - Does the context include a post?
-     - Are non-logged-in users barred?
+     - Does the logged in author get a 200?
+     - Do logged in users who aren't the author get a 404?
+     - Do non-logged in users get a 404?
     """
 
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create(
             username='user123',
+            password='password456'
+        )
+        cls.hacker = User.objects.create(
+            username='hacker',
             password='password456'
         )
         cls.post = Post.objects.create(
@@ -167,7 +175,13 @@ class TestDraftView(TestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 302)
 
-    def test_get_draft(self):
+    def test_nonauthor_gets_404(self):
+        """ Tests that a logged in user who isn't the author gets a 404 """
+        self.client.force_login(self.hacker)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_author_gets_200(self):
         """ Tests that a GET request works"""
         user = User.objects.get(username='user123')
         self.client.force_login(user)

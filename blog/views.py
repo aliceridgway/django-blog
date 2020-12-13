@@ -20,15 +20,18 @@ def index(request):
 
 @login_required
 def draft(request, username, slug):
-    """ Provides user with a preview of post in its draft state """
+    """ Provides author with a preview of post in its draft state """
 
-    post = Post.objects.get(author__username=username, slug=slug)
-    context = {
-        'page_title': post.title,
-        'post': post,
-    }
+    post = get_object_or_404(Post, author__username=username, slug=slug)
 
-    return render(request, 'blog/draft.html', context)
+    if request.user != post.author:
+        raise Http404("Oops! We couldn't find that page")
+    else:
+        context = {
+            'page_title': post.title,
+            'post': post,
+        }
+        return render(request, 'blog/draft.html', context)
 
 @login_required
 def publish_post(request, username, slug):
@@ -96,7 +99,7 @@ class EditPost(LoginRequiredMixin, UpdateView):
     template_name = 'blog/edit.html'
     fields = ['title', 'body']
 
-    # Make sure posts can only be deleted by the author!
+    # Make sure posts can only be edited by the author!
     def dispatch(self, request, *args, **kwargs):
         post = self.get_object()
         if post.author != self.request.user:
