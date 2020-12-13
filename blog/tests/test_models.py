@@ -8,81 +8,54 @@ from django.contrib.auth.models import User
 # Create your tests here.
 
 class TestPostModel(TestCase):
+    """
+    Things to test:
+    - Can be create a post with the bare minimum of fields? (Title, body and author)
+    - Does the __str__ method behave as expected?
+    - Is a slug automatically created?
+    - Do two posts with the same title and user get different slugs?
+    """
 
-    def setUp(self):
-        User.objects.create_user(
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create_user(
             username='user123',
             password='password456'
         )
 
-    def test_create_post(self):
-        """ Test that a post with a title, body, user and creation date can be created"""
-
-        user = User.objects.get(username='user123')
-        post = Post(
+        cls.post = Post.objects.create(
             title='My blog post',
-            body='Once upon a time...',
-            slug='my-blog-post',
-            author=user,
+            body='This is my first post',
+            author=cls.user,
         )
 
-        self.assertEqual(post.title, 'My blog post')
-        self.assertEqual(post.author, user)
+    def test_create_post(self):
+        """ Tests that a post with a title, body, user and creation date can be created"""
+
+        self.assertEqual(self.post.title, 'My blog post')
+        self.assertEqual(self.post.author, self.user)
 
 
     def test_post_str(self):
         """ Tests the __str__ of the Post model"""
-        user = User.objects.get(username='user123')
-        post = Post(
-            title='My blog post',
-            body='Once upon a time...',
-            slug='my-blog-post',
-            created=timezone.now,
-            author=user,
-        )
 
-        self.assertEqual(str(post),'My blog post | by user123')
-
-
-class TestPostSlugs(TestCase):
-
-    def setUp(self):
-        User.objects.create_user(
-            username='user123',
-            password='password456'
-        )
+        self.assertEqual(str(self.post),'My blog post | by user123')
 
     def test_creates_a_slug(self):
-        user = User.objects.get(username='user123')
+        """ Tests a slug is automatically created """
 
-        post = Post(
-            title='My title',
-            body='my post goes here',
-            author=user
-        )
-        post.save()
-
-        self.assertEqual(post.slug, 'my-title')
+        self.assertEqual(self.post.slug, 'my-blog-post')
 
     def test_slugs_are_unique(self):
         """ Tests two posts with identical titles from the same author receive different slugs """
-        user = User.objects.get(username='user123')
 
-        post1 = Post(
-            title='My title',
-            body='my post goes here',
-            author=user
+        second_title = Post.objects.create(
+            title='My blog post',
+            body='This is my second post',
+            author=self.user,
         )
-        post1.save()
 
-        post2 = Post(
-            title='My title',
-            body='my post goes here',
-            author=user
-        )
-        post2.save()
-
-        self.assertNotEqual(post1.slug, post2.slug)
+        self.assertNotEqual(self.post.slug, second_title.slug)
 
 class TestFeatureImages(TestCase):
 
