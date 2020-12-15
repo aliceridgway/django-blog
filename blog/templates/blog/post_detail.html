@@ -6,7 +6,10 @@
 
 <div class="container">
     <img class="img-fluid" src="{{ post.feature_image.url }}" alt="{{ post.title }}">
+    <hr>
     <h1>{{ post.title }}</h1>
+    <small>By <a href="{% url 'author' post.author.username %}">{{post.author.username}}</a>. Published
+        {{post.published}}</small>
     <p>{{ post.body | safe}}</p>
 </div>
 
