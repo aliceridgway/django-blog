@@ -509,9 +509,6 @@ class TestAuthorPage(TestCase):
             password='pass123'
         )
 
-        client = Client()
-        cls.response = client.get('/hemingway')
-
         Post.objects.create(
             title='t1',
             body='hello',
@@ -548,6 +545,10 @@ class TestAuthorPage(TestCase):
             author=cls.user2
         )
 
+        client = Client()
+        url = reverse('author', args=['hemingway'])
+        cls.response = client.get(url)
+
     def test_author_page(self):
         """ Tests that any user can see the posts by a given author """
 
@@ -556,9 +557,8 @@ class TestAuthorPage(TestCase):
     def test_author_posts(self):
         """ Tests that the posts in the context are only published posts by the author, ordered by publication date. """
 
-        posts = self.response.context.get('posts', {})
-        post_author_objects = set(posts.values_list('author', flat=True))
-        post_authors = [author.username for author in post_author_objects]
+        posts = self.response.context['posts']
+        post_authors = list(set(posts.values_list('author__username', flat=True)))
 
         self.assertEqual(len(post_authors), 1)
         self.assertEqual(post_authors[0], 'hemingway')
@@ -575,7 +575,7 @@ class TestAuthorPage(TestCase):
         """ Tests posts are sorted by publication date, most recent first."""
 
         posts = self.response.context.get('posts', {})
-        publication_dates = posts.values_list('published')
+        publication_dates = posts.values_list('published', flat=True)
         publication_years = [date.year for date in publication_dates]
 
         self.assertEqual(publication_years, [2020, 2019, 2018])

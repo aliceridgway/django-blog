@@ -74,6 +74,20 @@ def post_detail(request, username, slug):
     else:
         raise Http404("Oops! We couldn't find that post")
 
+def author(request, username):
+    """ Returns published posts by a given author and render's author's public page """
+
+    posts = Post.objects.filter(author__username=username, status='published').order_by('-published')
+
+    context = {
+        'page-title': username,
+        'posts': posts,
+        'author': username,
+
+    }
+
+    return render(request, 'blog/author.html', context)
+
 
 class AddPost(LoginRequiredMixin, CreateView):
     """ Allows users to add posts with UI """
