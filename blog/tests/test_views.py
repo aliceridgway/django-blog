@@ -487,3 +487,95 @@ class TestDeletePost(TestCase):
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 404)
+
+
+class TestAuthorPage(TestCase):
+    """
+    Things to test:
+    - Are the dislayed posts only by the user?
+    - Are the posts listed in order by published date?
+    - Are draft posts excluded?
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+
+        cls.user1 = User.objects.create(
+            username='hemingway',
+            password='password123'
+        )
+        cls.user2 = User.objects.create(
+            username='bronte',
+            password='pass123'
+        )
+
+        client = Client()
+        cls.response = client.get('/hemingway')
+
+        Post.objects.create(
+            title='t1',
+            body='hello',
+            author=cls.user1,
+            status='published',
+            published=datetime.datetime(2019,1,1)
+        )
+        Post.objects.create(
+            title='t2',
+            body='hello',
+            author=cls.user1,
+            status='published',
+            published=datetime.datetime(2018,1,1)
+        )
+        Post.objects.create(
+            title='t3',
+            body='hello',
+            author=cls.user1,
+            status='published',
+            published=datetime.datetime(2020,1,1)
+        )
+
+        user1_draft_titles = ['a1', 'a2']
+        for title in user1_draft_titles:
+            Post.objects.create(
+                title=title,
+                body='hello',
+                author=cls.user1,
+            )
+
+        Post.objects.create(
+            title='bronte books',
+            body='hi',
+            author=cls.user2
+        )
+
+    def test_author_page(self):
+        """ Tests that any user can see the posts by a given author """
+
+        self.assertEqual(self.response.status_code, 200)
+
+    def test_author_posts(self):
+        """ Tests that the posts in the context are only published posts by the author, ordered by publication date. """
+
+        posts = self.response.context.get('posts', {})
+        post_author_objects = set(posts.values_list('author', flat=True))
+        post_authors = [author.username for author in post_author_objects]
+
+        self.assertEqual(len(post_authors), 1)
+        self.assertEqual(post_authors[0], 'hemingway')
+
+    def test_excludes_drafts(self):
+        """ Tests that only published posts are shown on author page """
+
+        posts = self.response.context.get('posts', {})
+        post_statuses = posts.values_list('status', flat=True)
+
+        self.assertNotIn('draft', post_statuses)
+
+    def test_posts_sorted_by_publication_date(self):
+        """ Tests posts are sorted by publication date, most recent first."""
+
+        posts = self.response.context.get('posts', {})
+        publication_dates = posts.values_list('published')
+        publication_years = [date.year for date in publication_dates]
+
+        self.assertEqual(publication_years, [2020, 2019, 2018])
