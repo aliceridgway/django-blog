@@ -3,9 +3,12 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.views.generic import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy, reverse
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Post
 import datetime
+
+USER_MODEL = get_user_model()
 
 def index(request):
     """ Displays a list of posts """
@@ -77,13 +80,17 @@ def post_detail(request, username, slug):
 def author(request, username):
     """ Returns published posts by a given author and render's author's public page """
 
-    posts = Post.objects.filter(author__username=username, status='published').order_by('-published')
+    try:
+        author = get_user_model().objects.get(username=username)
+    except Exception:
+        raise Http404('This page does not exist')
+
+    posts = Post.objects.filter(author=author, status='published').order_by('-published')
 
     context = {
         'page-title': username,
         'posts': posts,
         'author': username,
-
     }
 
     return render(request, 'blog/author.html', context)
