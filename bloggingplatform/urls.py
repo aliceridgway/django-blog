@@ -20,7 +20,8 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('blog.urls'))
+    path('u', include('blog.urls')),
+    path('', include('user.urls'))
 ]
 
 # We only store media locally when a project is in development (DEBUG = True)
