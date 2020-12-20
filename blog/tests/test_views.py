@@ -3,8 +3,9 @@ from blog.models import Post
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.utils import timezone
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
+USER_MODEL = get_user_model()
 
 class TestIndexView(TestCase):
 
@@ -17,7 +18,10 @@ class TestIndexView(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        user = User.objects.create_user(
+        user = USER_MODEL.objects.create_user(
+            email='janedoe@test.com',
+            first_name='Jane',
+            last_name='Doe',
             username='user123',
             password='password456'
         )
@@ -94,7 +98,10 @@ class TestAddPostView(TestCase):
     def setUpTestData(cls):
         cls.client = Client()
         cls.url = reverse('add')
-        cls.user = User.objects.create_user(
+        cls.user = USER_MODEL.objects.create_user(
+            email='janedoe@test.com',
+            first_name='Jane',
+            last_name='Doe',
             username='user123',
             password='password456'
         )
@@ -153,11 +160,17 @@ class TestDraftView(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.user = User.objects.create(
+        cls.user = USER_MODEL.objects.create_user(
+            email='janedoe@test.com',
+            first_name='Jane',
+            last_name='Doe',
             username='user123',
             password='password456'
         )
-        cls.hacker = User.objects.create(
+        cls.hacker = USER_MODEL.objects.create_user(
+            email='hacker@test.com',
+            first_name='Hacker',
+            last_name='McHackerson',
             username='hacker',
             password='password456'
         )
@@ -185,7 +198,7 @@ class TestDraftView(TestCase):
     def test_author_gets_200(self):
         """ Tests that a GET request works"""
 
-        user = User.objects.get(username='user123')
+        user = USER_MODEL.objects.get(username='user123')
         self.client.force_login(user)
         response = self.client.get(self.url)
 
@@ -195,7 +208,7 @@ class TestDraftView(TestCase):
     def test_draft_context(self):
         """ Tests that there's a post included in the context"""
 
-        user = User.objects.get(username='user123')
+        user = USER_MODEL.objects.get(username='user123')
         self.client.force_login(user)
         response = self.client.get(self.url)
         post = response.context['post']
@@ -216,11 +229,17 @@ class TestEditPostView(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.user = User.objects.create(
+        cls.user = USER_MODEL.objects.create_user(
+            email='janedoe@test.com',
+            first_name='Jane',
+            last_name='Doe',
             username='user123',
             password='password456'
         )
-        cls.hacker = User.objects.create(
+        cls.hacker = USER_MODEL.objects.create_user(
+            email='hacker@test.com',
+            first_name='Hacker',
+            last_name='McHackerson',
             username='hacker',
             password='password456'
         )
@@ -289,11 +308,17 @@ class TestPublishView(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.user = User.objects.create(
+        cls.user = USER_MODEL.objects.create_user(
+            email='janedoe@test.com',
+            first_name='Jane',
+            last_name='Doe',
             username='user123',
             password='password456'
         )
-        cls.hacker = User.objects.create(
+        cls.hacker = USER_MODEL.objects.create_user(
+            email='hacker@test.com',
+            first_name='Hacker',
+            last_name='McHackerson',
             username='hacker',
             password='password456'
         )
@@ -365,13 +390,19 @@ class TestPostDetail(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.user = User.objects.create(
+        cls.user = USER_MODEL.objects.create_user(
+            email='janedoe@test.com',
+            first_name='Jane',
+            last_name='Doe',
             username='user123',
             password='password456'
         )
-        cls.hacker = User.objects.create(
+        cls.hacker = USER_MODEL.objects.create_user(
+            email='hacker@test.com',
+            first_name='Hacker',
+            last_name='McHackerson',
             username='hacker',
-            password='password123'
+            password='password456'
         )
         cls.draft_post = Post.objects.create(
             title='my draft title',
@@ -448,11 +479,17 @@ class TestDeletePost(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.user = User.objects.create(
+        cls.user = USER_MODEL.objects.create_user(
+            email='janedoe@test.com',
+            first_name='Jane',
+            last_name='Doe',
             username='user123',
             password='password456'
         )
-        cls.hacker = User.objects.create(
+        cls.hacker = USER_MODEL.objects.create_user(
+            email='hacker@test.com',
+            first_name='Hacker',
+            last_name='McHackerson',
             username='hacker',
             password='password456'
         )
@@ -495,16 +532,23 @@ class TestAuthorPage(TestCase):
     - Are the dislayed posts only by the user?
     - Are the posts listed in order by published date?
     - Are draft posts excluded?
+    - If the url does not match a username, is a 404 returned?
     """
 
     @classmethod
     def setUpTestData(cls):
 
-        cls.user1 = User.objects.create(
+        cls.user1 = USER_MODEL.objects.create_user(
+            email='ernest@hemingway.com',
+            first_name='Ernest',
+            last_name='Hemingway',
             username='hemingway',
             password='password123'
         )
-        cls.user2 = User.objects.create(
+        cls.user2 = USER_MODEL.objects.create_user(
+            email='charlotte@bronte.com',
+            first_name='Charlotte',
+            last_name='Bronte',
             username='bronte',
             password='pass123'
         )
@@ -545,9 +589,9 @@ class TestAuthorPage(TestCase):
             author=cls.user2
         )
 
-        client = Client()
+        cls.client = Client()
         url = reverse('author', args=['hemingway'])
-        cls.response = client.get(url)
+        cls.response = cls.client.get(url)
 
     def test_author_page(self):
         """ Tests that any user can see the posts by a given author """
@@ -579,3 +623,11 @@ class TestAuthorPage(TestCase):
         publication_years = [date.year for date in publication_dates]
 
         self.assertEqual(publication_years, [2020, 2019, 2018])
+
+    def test_no_author_match(self):
+        """ Test that attempts to reach a page not belonging to a user is given a 404"""
+
+        url = reverse('author', args=['thisisnotausername'])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 404)

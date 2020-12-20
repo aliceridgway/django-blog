@@ -3,9 +3,10 @@ from blog.models import Post, get_filename
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.utils import timezone
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 # Create your tests here.
+USER_MODEL = get_user_model()
 
 class TestPostModel(TestCase):
     """
@@ -18,7 +19,10 @@ class TestPostModel(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.user = User.objects.create_user(
+        cls.user = USER_MODEL.objects.create_user(
+            email='janedoe@test.com',
+            first_name='Jane',
+            last_name='Doe',
             username='user123',
             password='password456'
         )
@@ -61,7 +65,10 @@ class TestFeatureImages(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.user = User.objects.create(
+        cls.user = USER_MODEL.objects.create_user(
+            email='janedoe@test.com',
+            first_name='Jane',
+            last_name='Doe',
             username='user1',
             password='password123'
         )
