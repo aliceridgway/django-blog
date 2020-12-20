@@ -12,7 +12,6 @@ class TestUserManager(TestCase):
     - Are special characters in the username blocked? (the username will go in urls so a '/' could cause issues)
     - Are users blocked from creating two accounts with the same email?
     - Is the uniqueness of usernames enforced?
-    - Is there an image field for the profile picture?
     - Is a date/time saved when a user is created?
     """
 
