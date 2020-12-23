@@ -22,8 +22,9 @@ from blog.views import index
 urlpatterns = [
     path('', index, name='index'),
     path('admin/', admin.site.urls),
-    path('u', include('blog.urls')),
-    path('', include('user.urls'))
+    path('', include('user.urls')),
+    # blog urls must go last!
+    path('', include('blog.urls')),
 ]
 
 # We only store media locally when a project is in development (DEBUG = True)
