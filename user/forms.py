@@ -3,15 +3,17 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from .models import User
 from django import forms
 
+
 class CustomUserCreationForm(UserCreationForm):
     """
     We need to extend the default UserCreationForm to accommodate the extra fields.
     This form is displayed when we create a user in admin from another model.
     We can also reuse the form in the UI for registration.
     """
-
     class Meta:
-        fields = ('email', 'password', 'first_name', 'last_name', 'username')
+        model = User
+        fields = ("email", "first_name", "last_name", "username")
+
 
 
 class UserChangeForm(forms.ModelForm):
