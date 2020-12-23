@@ -58,7 +58,7 @@ class TestIndexView(TestCase):
         """ Tests that a get request to index works and renders the correct template"""
 
         self.assertEquals(self.response.status_code, 200)
-        self.assertTemplateUsed('blog/index.html')
+        self.assertTemplateUsed(self.response, 'blog/index.html')
 
     def test_context_contains_posts(self):
         """ Tests that there the context contains 'posts' """
@@ -113,7 +113,7 @@ class TestAddPostView(TestCase):
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed('blog/add.html')
+        self.assertTemplateUsed(response, 'blog/add.html')
 
     def test_user_must_be_logged_in(self):
         """ Tests that a non-logged in user is redirected """
@@ -203,7 +203,7 @@ class TestDraftView(TestCase):
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed('blog/draft.html')
+        self.assertTemplateUsed(response, 'blog/draft.html')
 
     def test_draft_context(self):
         """ Tests that there's a post included in the context"""
@@ -264,7 +264,7 @@ class TestEditPostView(TestCase):
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed('blog/edit.html')
+        self.assertTemplateUsed(response, 'blog/edit.html')
 
     def test_non_authors_get_404(self):
         """ Tests that a logged in user who is not the author gets a 404 """
@@ -434,7 +434,7 @@ class TestPostDetail(TestCase):
         response = self.client.get(post_detail_url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed('blog/post_detail.html')
+        self.assertTemplateUsed(response, 'blog/post_detail.html')
 
     def test_user_draft_redirect(self):
         """ Tests that a logged-in user attempting to view their own unpublished post is redirected to the drafts page. """
