@@ -1,0 +1,16 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+
+<!-- form | crispy required for Crispy Forms to do the styling -->
+
+<div class="container">
+<h1>{{user.first_name}} {{user.last_name}}</h1>
+
+{% if user.profile %}
+<p>{{ user.profile.body | safe }}</p>
+{% endif %}
+</div>
+
+
+{% endblock %}
