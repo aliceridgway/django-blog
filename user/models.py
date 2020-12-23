@@ -96,4 +96,4 @@ class Profile(models.Model):
     bio = models.TextField()
 
     def __str__(self):
-        return str(self.user)
+        return f"{self.user.first_name} {self.user.last_name} ({self.user.username}) | {self.user.email}"

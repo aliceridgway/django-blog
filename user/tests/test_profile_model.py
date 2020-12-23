@@ -10,6 +10,7 @@ class TestProfileModel(TestCase):
     - Does it include an image field for profile picture?
     - Does it include a bio?
     - Is the profile linked to the correct user?
+    - Does the __str__ give the expected result?
     """
 
     @classmethod
@@ -36,3 +37,7 @@ class TestProfileModel(TestCase):
         """ Tests that we can access the profile from the user object."""
         self.assertTrue(self.user, 'profile')
         self.assertEqual(self.user.profile.bio, 'Jane Doe is a Ruby on Rails developer from Manchester.')
+
+    def test_str(self):
+        expected_str = 'Jane Doe (janedoe) | janedoe@test.com'
+        self.assertEqual(str(self.profile), expected_str)
