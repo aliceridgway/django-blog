@@ -9,5 +9,5 @@ USER_MODEL = get_user_model()
 class Register(CreateView):
     model = USER_MODEL
     form_class = CustomUserCreationForm
-    template_name = 'registration/register.html'
+    template_name = 'user/register.html'
     success_url = reverse_lazy('index')
