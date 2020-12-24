@@ -6,6 +6,7 @@
 #
 django-autoslug==1.9.8    # via -r requirements.in
 django-ckeditor==6.0.0    # via -r requirements.in
+django-countries==7.0     # via -r requirements.in
 django-crispy-forms==1.10.0  # via -r requirements.in
 django-environ==0.4.5     # via -r requirements.in
 django-js-asset==1.2.2    # via django-ckeditor

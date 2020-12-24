@@ -3,4 +3,5 @@ django-environ
 django-autoslug
 django-crispy-forms
 django-ckeditor
+django-countries
 pillow
