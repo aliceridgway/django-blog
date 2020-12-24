@@ -31,4 +31,5 @@ urlpatterns = [
 # Once deployed, we will need to host static assets elsewhere (e.g. AWS S3 bucket)
 
 if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
