@@ -3,12 +3,18 @@
 {% block content %}
 <div class="jumbotron">
     <div class="container">
-        <h1>{{author}}</h1>
-        <p>Alice is a full-stack developer from South Yorkshire. She likes to write about Django and Vue.</p>
+        <h1>{{author.first_name}} {{author.last_name}}</h1>
+
+        <p>{{author.profile.bio}}</p>
+
     </div>
- 
+
 </div>
 <div class="container">
+
+    {% if user == author %}
+    <a href="{% url 'profile' author.username %}" class="btn btn-outline-primary">Edit</a>
+    {% endif %}
 
     <h2>Recent Posts</h2>
     <div class="row row-cols-1 row-cols-md-3 g-4">
