@@ -3,6 +3,17 @@ from django.utils.text import slugify
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
+from datetime import datetime
+
+def get_filename(self, filename):
+    """ Generates a custom filename for uploads based on author's username and the post's creation date """
+
+    extension = filename.split('.')[-1]
+    t = datetime.now()
+    datetime_str = f"{t.year}-{t.month}-{t.day}-{t.hour}{t.minute}{t.second}"
+
+    return f"uploads/profiles/{self.user.username}_{datetime_str}.{extension}"
+
 
 class UserManager(BaseUserManager):
 
@@ -94,6 +105,7 @@ class User(AbstractBaseUser):
 class Profile(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     bio = models.TextField()
+    profile_picture = models.ImageField(blank=True, null=True, upload_to=get_filename)
 
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name} ({self.user.username}) | {self.user.email}"

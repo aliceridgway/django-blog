@@ -15,7 +15,6 @@ class CustomUserCreationForm(UserCreationForm):
         fields = ("email", "first_name", "last_name", "username")
 
 
-
 class UserChangeForm(forms.ModelForm):
     """
     This is the form that's displayed when you edit the user. This won't affect how user information is displayed
@@ -34,4 +33,4 @@ class ProfileForm(forms.ModelForm):
 
     class Meta:
         model = Profile
-        fields = ('bio',)
+        fields = ('bio', 'profile_picture')

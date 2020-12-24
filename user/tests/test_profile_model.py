@@ -1,6 +1,8 @@
 from django.test import TestCase
+from django.db import models
 from django.contrib.auth import get_user_model
-from user.models import Profile
+from user.models import Profile, get_filename
+from datetime import datetime
 
 USER_MODEL = get_user_model()
 
@@ -39,5 +41,30 @@ class TestProfileModel(TestCase):
         self.assertEqual(self.user.profile.bio, 'Jane Doe is a Ruby on Rails developer from Manchester.')
 
     def test_str(self):
+        """ Tests the __str__ representation. """
+
         expected_str = 'Jane Doe (janedoe) | janedoe@test.com'
         self.assertEqual(str(self.profile), expected_str)
+
+    def test_profile_picture_placeholder(self):
+        """ Tests that a profile picture property exists. """
+
+        self.assertTrue(hasattr(self.profile, "profile_picture"))
+
+        picture_field = Profile._meta.get_field("profile_picture")
+
+        self.assertTrue(isinstance(picture_field, models.ImageField))
+
+    def test_get_filename(self):
+        """ Tests that uploaded images get a custom filename based on author's username and the post's creation date"""
+
+        path = get_filename(self,'arbitraryfilename.jpg')
+
+        t = datetime.now()
+        datetime_str = f"{t.year}-{t.month}-{t.day}-{t.hour}{t.minute}{t.second}"
+
+        username = self.user.username
+        expected_path = f"uploads/profiles/{self.user.username}_{datetime_str}.jpg"
+
+        self.assertEqual(path, expected_path)
+
