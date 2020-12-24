@@ -90,7 +90,7 @@ def author(request, username):
     context = {
         'page-title': username,
         'posts': posts,
-        'author': username,
+        'author': author,
     }
 
     return render(request, 'blog/author.html', context)
