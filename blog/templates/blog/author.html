@@ -1,22 +1,38 @@
 {% extends 'blog/base.html' %}
-{% load static %}
+
 
 {% block content %}
 <div class="jumbotron">
     <div class="container">
-        <div class="card" style="width: 18rem;">
+        <div class="card text-center p-4" style="width: 20rem;">
 
-            {% if author.profile.profile_picture %}
-            <img src="{{author.profile.profile_picture.url}}" class="card-img-top rounded w-100 h-100" alt="...">
-            {% else %}
-            <img src="{% static 'images/people-default.svg' %}" class="card-img-top rounded w-100 h-100" alt="...">
-            {% endif %}
+            <div class="rounded-circle bg-light mx-auto m-3" style="height:150px; width:150px;">
+                {% if author.profile.profile_picture %}
+                <img src="{{author.profile.profile_picture.url}}" class="rounded-circle w-100 h-100" alt="...">
+                {% else %}
+                {% load static %}
+                <img src="{% static 'images/people-default.svg' %}" class="rounded-circle w-100 h-100 " alt="Profile photo of {{author.first_name}} {{author.last_name}}">
+                {% endif %}
+            </div>
 
             <div class="card-body">
-              <h5 class="card-title">{{author.first_name}} {{author.last_name}}</h5>
+              <h5 class="card-title"><b>{{author.first_name}} {{author.last_name}}</b></h5>
               <h6 class="card-subtitle mb-2 text-muted">@{{author.username}}</h6>
               <p class="card-text">{{author.profile.bio}}</p>
             </div>
+
+            {% if user == author %}
+            <a href="{% url 'profile' author.username %}" class="btn btn-outline-secondary mb-3">Edit Profile</a>
+            {% else %}
+            <a href="#" class="btn btn-outline-primary">Follow</a>
+            {% endif %}
+
+            <p class="card-text"><i class="fas fa-users text-muted"></i><b> 10</b> Followers · <b>20</b> Following</p>
+            <p><i class="fas fa-map-marker-alt text-muted"></i> Sheffield, UK</p>
+            <p><a href='#'>https://alicecampkin.com</a></p>
+
+            <small>Member since {{author.account_created | date:"F Y"}}</small>
+
         </div>
 
     </div>
@@ -24,9 +40,8 @@
 </div>
 <div class="container">
 
-    {% if user == author %}
-    <a href="{% url 'profile' author.username %}" class="btn btn-outline-primary">Edit</a>
-    {% endif %}
+    
+
 
     <h2>Recent Posts</h2>
     <div class="row row-cols-1 row-cols-md-3 g-4">
