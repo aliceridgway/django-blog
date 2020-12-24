@@ -1,11 +1,23 @@
 {% extends 'blog/base.html' %}
+{% load static %}
 
 {% block content %}
 <div class="jumbotron">
     <div class="container">
-        <h1>{{author.first_name}} {{author.last_name}}</h1>
+        <div class="card" style="width: 18rem;">
 
-        <p>{{author.profile.bio}}</p>
+            {% if author.profile.profile_picture %}
+            <img src="{{author.profile.profile_picture.url}}" class="card-img-top rounded w-100 h-100" alt="...">
+            {% else %}
+            <img src="{% static 'images/people-default.svg' %}" class="card-img-top rounded w-100 h-100" alt="...">
+            {% endif %}
+
+            <div class="card-body">
+              <h5 class="card-title">{{author.first_name}} {{author.last_name}}</h5>
+              <h6 class="card-subtitle mb-2 text-muted">@{{author.username}}</h6>
+              <p class="card-text">{{author.profile.bio}}</p>
+            </div>
+        </div>
 
     </div>
 
