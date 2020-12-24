@@ -82,16 +82,6 @@ class TestUserManager(TestCase):
         # Django will automatically enforce uniqueness for the USERNAME_FIELD
         self.assertEqual(get_user_model().USERNAME_FIELD, 'email')
 
-    # def test_profile_picture_placeholder(self):
-    #     """ Tests that a profile picture property exists. """
-
-    #     self.assertTrue(hasattr(self.user, 'profile_picture'))
-    #     self.assertTrue(hasattr(self.user, 'profile_picture'))
-
-    #     picture_field = get_user_model()._meta.get_field("profile_picture")
-
-    #     self.assertTrue(isinstance(picture_field, models.ImageField))
-
     def test_account_created(self):
         """ Tests that a datetime is assigned to users when their account has been created. """
 
