@@ -3,6 +3,7 @@ from django.utils.text import slugify
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
+from django_countries.fields import CountryField
 from datetime import datetime
 
 def get_filename(self, filename):
@@ -106,6 +107,11 @@ class Profile(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     bio = models.TextField()
     profile_picture = models.ImageField(blank=True, null=True, upload_to=get_filename)
+    city = models.CharField(blank=True, null=True, max_length=100)
+    country = CountryField(blank_label='(select country)', blank=True, null=True)
+    website = models.URLField(help_text='You can add a link to your personal website', blank=True, null=True)
+    twitter_username = models.CharField(help_text='Add your Twitter username', max_length=100, blank=True, null=True)
+    github_username = models.CharField(help_text='Add your GitHub username', max_length=100, blank=True, null=True)
 
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name} ({self.user.username}) | {self.user.email}"

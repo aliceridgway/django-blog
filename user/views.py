@@ -32,6 +32,9 @@ def profile(request, username):
             if user_profile_exists:
                 # Update profile
                 user.profile.bio = request.POST['bio']
+                user.profile.profile_picture = request.FILES['profile_picture']
+                user.profile.city = request.POST['city']
+                user.profile.country = request.POST['country']
                 user.profile.save()
             else:
                 # Create profile

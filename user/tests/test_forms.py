@@ -1,7 +1,8 @@
 from django.test import TestCase
 from user.forms import ProfileForm
 
-PROFILE_FIELDS = ['bio', 'profile_picture']
+
+PROFILE_FIELDS = ['bio', 'profile_picture', 'city', 'country', 'website', 'twitter_username', 'github_username']
 
 class TestProfileForm(TestCase):
 

@@ -1,7 +1,7 @@
+from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from .models import User, Profile
-from django import forms
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -26,11 +26,12 @@ class UserChangeForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('email', 'first_name', 'password', 'last_name', 'username', 'is_active', 'is_admin')
+        fields = ('email', 'first_name', 'password', 'last_name',
+                  'username', 'is_active', 'is_admin')
 
 
 class ProfileForm(forms.ModelForm):
 
     class Meta:
         model = Profile
-        fields = ('bio', 'profile_picture')
+        fields = ('bio', 'profile_picture', 'city', 'country')
