@@ -1,19 +1,30 @@
 {% extends 'blog/base.html' %}
+{% load static %}
+
 
 {% block content %}
 
-<!-- form | crispy required for Crispy Forms to do the styling -->
-
 <div class="container">
-<h1>{{user.first_name}} {{user.last_name}}</h1>
-<small>@{{user.username}}</small>
+    <div class="d-flex align-items-center mt-3">
 
-{% load crispy_forms_tags %}
-<form method="post" novalidate enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form|crispy }}
-    <input type="submit" class="btn btn-primary" value="Save">
-</form>
+        <form method="post" novalidate enctype="multipart/form-data" id="profileUpload" class="mr-3"
+            data-url="{{post_url}}">
+            {% csrf_token %}
+            {% include 'user/partials/profilepicture_widget.html' %}
+        </form>
 
+        <div>
+            <h1>{{user.first_name}} {{user.last_name}}</h1>
+            <h5 class="card-subtitle text-muted">@{{user.username}}</h5>
+        </div>
+    </div>
 
+    {% include 'user/partials/cropper_modal.html' %}
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+<script type="application/javascript" src="{% static 'js/profilephoto_upload.js' %}"
+    data-username="{{user.username}}"></script>
 {% endblock %}

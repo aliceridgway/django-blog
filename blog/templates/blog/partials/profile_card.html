@@ -2,18 +2,19 @@
 
     <div class="rounded-circle bg-light mx-auto m-3" style="height:150px; width:150px;">
         {% if author.profile.profile_picture %}
-        <img src="{{author.profile.profile_picture.url}}" class="rounded-circle w-100 h-100" alt="...">
+        <img src="{{author.profile.profile_picture.url}}" style="object-fit:cover;" class="rounded-circle w-100 h-100"
+            alt="Profile photo for {{author.first_name}} {{author.last_name}}">
         {% else %}
         {% load static %}
-        <img src="{% static 'images/people-default.svg' %}" class="rounded-circle w-100 h-100 "
-            alt="Profile photo of {{author.first_name}} {{author.last_name}}">
+        <img src="{% static 'images/people-default.svg' %}" style="object-fit:cover;"
+            class="rounded-circle w-100 h-100 img-fluid"
+            alt="placeholder photo of {{author.first_name}} {{author.last_name}}">
         {% endif %}
     </div>
 
     <div class="card-body">
         <h5 class="card-title"><b>{{author.first_name}} {{author.last_name}}</b></h5>
         <h6 class="card-subtitle mb-2 text-muted">@{{author.username}}</h6>
-        <p class="card-text">{{author.profile.bio}}</p>
     </div>
 
     {% if user == author %}
@@ -25,8 +26,10 @@
 
     <p class="card-text"><i class="fas fa-users text-muted"></i><b> 10</b> Followers · <b>20</b> Following</p>
     <hr>
-    <p class="card-text text-left"><i class="fas fa-map-marker-alt text-muted mr-2"></i>Sheffield, UK</p>
-    <p class="card-text text-left"><i class="fas fa-map-pin text-muted mr-2"></i><a href='#'>https://alicecampkin.com</a></p>
+    <p class="card-text text-left"><i class="fas fa-map-marker-alt text-muted mr-2"></i>{{author.profile.city}},
+        {{author.profile.country.name}}</p>
+    <p class="card-text text-left"><i class="fas fa-map-pin text-muted mr-2"></i><a
+            href='#'>https://alicecampkin.com</a></p>
     <p class="card-text text-left"><i class="fab fa-twitter text-muted mr-2"></i><a href='#'>@alcampk</a></p>
     <hr>
 

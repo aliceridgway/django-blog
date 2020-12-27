@@ -1,0 +1,28 @@
+.modal-body {
+  padding: 0;
+}
+
+.profile_picture__overlay {
+  position: absolute;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  top: 0;
+  left: 0;
+  width: 150px;
+  height: 150px;
+  background: rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  border-radius: 50%;
+  -webkit-transition: 0.3s all;
+  transition: 0.3s all;
+}
+
+.profile_picture__overlay i {
+  margin: auto;
+}
+
+.profile_picture__overlay:hover {
+  opacity: 1;
+}
+/*# sourceMappingURL=styles.css.map */

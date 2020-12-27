@@ -1,0 +1,24 @@
+{% load static %}
+
+<label for="id_profile_picture">
+    <div class="rounded-circle bg-light m-3 position-relative"
+        style="height:150px; width:150px; box-shadow: 5px 5px 15px rgba(0,0,0,0.2);" id="profile_picture">
+
+        {% if user.profile.profile_picture %}
+        <img src="{{user.profile.profile_picture.url}}" style="object-fit:cover;" class="rounded-circle w-100 h-100"
+            alt="Profile photo for {{user.first_name}} {{user.last_name}}">
+        {% else %}
+        <img src="{% static 'images/people-default.svg' %}" style="object-fit:cover;"
+            class="rounded-circle w-100 h-100 img-fluid"
+            alt="placeholder photo of {{user.first_name}} {{user.last_name}}">
+        {% endif %}
+        <div class="profile_picture__overlay"><i class="fas fa-camera text-white"></i></div>
+        <p class="text-muted text-center small mt-2">change</p>
+    </div>
+</label>
+<input type="file" name="profile_picture" accept="image/*" style="display:none;" id="id_profile_picture">
+
+<input type="hidden" name="x" id="id_x">
+<input type="hidden" name="y" id="id_y">
+<input type="hidden" name="width" id="id_width">
+<input type="hidden" name="height" id="id_height">
