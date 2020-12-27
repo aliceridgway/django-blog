@@ -4,11 +4,12 @@
 
 {% block content %}
 
-<div class="container">
-    <div class="d-flex align-items-center mt-3">
+
+<div class="jumbotron">
+    <div class="d-flex align-items-center mt-3 container">
 
         <form method="post" novalidate enctype="multipart/form-data" id="profileUpload" class="mr-3"
-            data-url="{{post_url}}">
+            data-url="{{photo_upload_url}}">
             {% csrf_token %}
             {% include 'user/partials/profilepicture_widget.html' %}
         </form>
@@ -18,8 +19,19 @@
             <h5 class="card-subtitle text-muted">@{{user.username}}</h5>
         </div>
     </div>
+</div>
+
+<div class="container">
 
     {% include 'user/partials/cropper_modal.html' %}
+
+    <h2 class="mt-6">Edit Profile</h2>
+    <form method="post" novalidate class="mt-6">
+        {% csrf_token %}
+        {% load crispy_forms_tags %}
+        {{ form | crispy}}
+        <input type="submit" value="Save" class="btn btn-primary">
+    </form>
 </div>
 
 {% endblock %}

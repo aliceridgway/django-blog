@@ -1,4 +1,4 @@
-from .forms import CustomUserCreationForm, PhotoForm
+from .forms import CustomUserCreationForm, ProfileForm
 from .models import Profile
 from django.urls import reverse_lazy, reverse
 from django.http import Http404, HttpResponseRedirect, HttpResponse
@@ -6,7 +6,6 @@ from django.shortcuts import render, get_object_or_404
 from django.views.generic import CreateView
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-import json
 
 USER_MODEL = get_user_model()
 
@@ -30,34 +29,30 @@ def profile(request, username):
 
         if user_profile_exists:
             profile = get_object_or_404(Profile, user=user)
-            form = PhotoForm(request.POST, request.FILES, instance=profile)
+            form = ProfileForm(request.POST, instance=profile)
         else:
-            form = PhotoForm(request.POST, request.FILES)
+            form = ProfileForm(request.POST)
 
         if form.is_valid():
-            # Update profile
-            user = request.user
-            profile = form.save(user, commit=False)
-            response = {
-                'status': 'SUCCESS',
-                'photo_url': profile.profile_picture.url
-            }
-            return HttpResponse(json.dumps(response), content_type='application/json')
+            profile = form.save(commit=False)
+            profile.user = user
+            profile.save()
+
+            success_url = reverse('author', args=[user.username])
+            return HttpResponseRedirect(success_url)
 
     if request.method == 'GET':
 
         if user_profile_exists:
             profile = Profile.objects.get(user=user)
-            form = PhotoForm(instance=profile)
+            form = ProfileForm(instance=profile)
         else:
-            form = PhotoForm()
-
-        post_url = reverse('profile', args=[user.username])
+            form = ProfileForm()
 
     context = {
         'page-title': user.username,
         'form': form,
-        'post_url': post_url
+        'photo_upload_url': reverse('change_profile_picture', args=[user.username])
     }
 
     return render(request, 'user/profile.html', context)

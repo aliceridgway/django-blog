@@ -1,9 +1,11 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from . import views
+from . import views_ajax as ajax_views
 
 urlpatterns = [
     path('<str:username>/profile', views.profile, name='profile'),
+    path('<str:username>/profile/photo/change', ajax_views.change_profile_picture, name='change_profile_picture'),
     path('register', views.Register.as_view(), name='register'),
     path('login', auth_views.LoginView.as_view(
         template_name='user/login.html'), name='login'),

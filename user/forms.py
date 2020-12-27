@@ -50,7 +50,6 @@ class PhotoForm(forms.ModelForm):
         fields = ('profile_picture', 'x', 'y', 'width',
                   'height')
 
-
     def save(self, user, commit=True):
 
         profile = super().save()
@@ -71,3 +70,13 @@ class PhotoForm(forms.ModelForm):
 
         return profile
 
+
+class ProfileForm(forms.ModelForm):
+    """
+    A form to create/update a user profile. Includes all fields apart from
+    profile_picture, which is handled in PhotoForm.
+    """
+    class Meta:
+        model = Profile
+        fields = ('bio', 'city', 'country', 'website', 'twitter_username',
+                  'github_username')
