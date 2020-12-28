@@ -2,10 +2,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
-from django.core.files.uploadedfile import SimpleUploadedFile
 from user.models import Profile
-from PIL import Image
-import json
 
 USER_MODEL = get_user_model()
 
@@ -34,10 +31,7 @@ class TestProfileView(TestCase):
             username='hacker',
             password='password456'
         )
-        cls.user_profile = Profile.objects.create(
-            user=cls.user,
-            bio='Jane Doe is a Django developer from Manchester.'
-        )
+
         cls.client = Client()
         cls.url = reverse('profile', args=[cls.user.username])
 
@@ -65,18 +59,6 @@ class TestProfileView(TestCase):
 
         self.assertEqual(response.status_code, 404)
 
-    def test_profile_edit_form(self):
-        """ Tests that a user with an existing profile can edit."""
-
-        self.client.force_login(self.user)
-        response = self.client.get(self.url)
-
-        form = response.context.get('form', {})
-
-        self.assertIn('form', response.context)
-        self.assertEqual(form.instance.bio,
-                         'Jane Doe is a Django developer from Manchester.')
-
     def test_profile_create(self):
         """ Tests that a new user can create a profile in the same view. """
 
@@ -92,12 +74,9 @@ class TestProfileView(TestCase):
 
         response = self.client.get(
             reverse('profile', args=[new_user.username]))
-        form = response.context['form']
 
-        self.assertFalse(hasattr(new_user, 'profile'))
         self.assertEqual(response.status_code, 200)
         self.assertIn('form', response.context)
-        self.assertEqual(form.instance.user, None)
 
     def test_user_update(self):
         """ Tests that a user can update their profile """
@@ -170,10 +149,6 @@ class TestProfilePhotoView(TestCase):
             username='hacker',
             password='password456'
         )
-        cls.user_profile = Profile.objects.create(
-            user=cls.user,
-            bio='Jane Doe is a Django developer from Manchester.'
-        )
 
         cls.client = Client()
         cls.url = reverse('change_profile_picture', args=[cls.user.username])
@@ -220,10 +195,11 @@ class TestProfilePhotoView(TestCase):
         }
 
         with self.assertRaises(ValidationError):
-            response = self.client.post(self.url, form_data)
+            self.client.post(self.url, form_data)
 
     def test_post_request(self):
-        """ Tests that POST request is successful for a logged-in user attempting to upload profile picture to their own profile."""
+        """ Tests that POST request is successful for a logged-in user
+         attempting to upload profile picture to their own profile."""
 
         self.client.force_login(self.user)
 

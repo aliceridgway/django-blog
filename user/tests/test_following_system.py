@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from user.models import Follower, Profile
+from user.models import Follower
 
 USER_MODEL = get_user_model()
 
@@ -20,9 +20,6 @@ class TestFollow(TestCase):
             email='famouswriter@test.com',
             password='iamabigshot'
         )
-        Profile.objects.create(
-            user=cls.famous_writer
-        )
 
         cls.fan = USER_MODEL.objects.create(
             first_name='Jane',
@@ -30,9 +27,6 @@ class TestFollow(TestCase):
             username='janecodes',
             email='janedoe@test.com',
             password='password123'
-        )
-        Profile.objects.create(
-            user=cls.fan
         )
 
         cls.follow = Follower.objects.create(
@@ -70,14 +64,6 @@ class TestProfileFollowing(TestCase):
             username='janecodes',
             email='janedoe@test.com',
             password='password123'
-        )
-
-        cls.famous_writer_profile = Profile.objects.create(
-            user=cls.famous_writer
-        )
-
-        cls.fan_profile = Profile.objects.create(
-            user=cls.fan
         )
 
         cls.event = Follower.objects.create(
