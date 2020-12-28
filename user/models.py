@@ -1,10 +1,10 @@
 from django.db import models
 from django.utils.text import slugify
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.core.exceptions import ValidationError
 from django_countries.fields import CountryField
 from datetime import datetime
+
 
 def get_filename(self, filename):
     """ Generates a custom filename for uploads based on author's username and the post's creation date """
@@ -105,15 +105,15 @@ class User(AbstractBaseUser):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
-    blog_title = models.CharField(blank=True, null=True, max_length=255, help_text='You can give your page a title to go under your name')
+    blog_title = models.CharField(blank=True, null=True, max_length=255, help_text='Add a blog title or headline to go beneath your name')
     bio = models.TextField(blank=True, null=True)
     profile_picture = models.ImageField(blank=True, null=True, upload_to=get_filename)
     cover_photo = models.ImageField(blank=True, null=True, upload_to=get_filename)
     city = models.CharField(blank=True, null=True, max_length=100)
     country = CountryField(blank_label='(select country)', blank=True, null=True)
     website = models.URLField(help_text='You can add a link to your personal website', blank=True, null=True)
-    twitter_username = models.CharField(help_text='Add your Twitter username', max_length=100, blank=True, null=True)
-    github_username = models.CharField(help_text='Add your GitHub username', max_length=100, blank=True, null=True)
+    twitter = models.CharField(max_length=16, blank=True, null=True)
+    github = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name} ({self.user.username}) | {self.user.email}"
