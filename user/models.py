@@ -105,8 +105,10 @@ class User(AbstractBaseUser):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
-    bio = models.TextField()
+    blog_title = models.CharField(blank=True, null=True, max_length=255, help_text='You can give your page a title to go under your name')
+    bio = models.TextField(blank=True, null=True)
     profile_picture = models.ImageField(blank=True, null=True, upload_to=get_filename)
+    cover_photo = models.ImageField(blank=True, null=True, upload_to=get_filename)
     city = models.CharField(blank=True, null=True, max_length=100)
     country = CountryField(blank_label='(select country)', blank=True, null=True)
     website = models.URLField(help_text='You can add a link to your personal website', blank=True, null=True)
@@ -115,3 +117,16 @@ class Profile(models.Model):
 
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name} ({self.user.username}) | {self.user.email}"
+
+    def get_location(self):
+        """ Returns a string with the user's location based on their chosen city/country. """
+        if not self.city and not self.country:
+            return
+
+        if self.city:
+            if self.country.name:
+                return f"{self.city}, {self.country.name}"
+            else:
+                return f"{self.city}"
+        else:
+            return f"{self.country.name}"

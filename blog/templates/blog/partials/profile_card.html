@@ -18,10 +18,12 @@
 
     <hr>
     <table>
+        {% if author.profile.get_location %}
         <tr>
             <td><i class="fas fa-map-marker-alt text-muted mr-2"></i></td>
-            <td><p class="card-text text-left">{{author.profile.city}}, {{author.profile.country.name}}</p></td>
+            <td><p class="card-text text-left">{{author.profile.get_location}}</p></td>
         </tr>
+        {% endif %}
         {% if author.profile.website %}
         <tr>
             <td><i class="fas fa-map-pin text-muted mr-2"></i></td>

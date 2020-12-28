@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from user.models import Profile, get_filename
 from datetime import datetime
+from django_countries import countries
 
 USER_MODEL = get_user_model()
 
@@ -67,4 +68,40 @@ class TestProfileModel(TestCase):
         expected_path = f"uploads/profiles/{self.user.username}_{datetime_str}.jpg"
 
         self.assertEqual(path, expected_path)
+
+    def test_get_location(self):
+        """ Tests the get_location method returns nothing if city & country are undefined """
+
+        location = self.profile.get_location()
+
+        self.assertEqual(location, None)
+
+    def test_get_location_city_only(self):
+        """ Tests that get_location returns city """
+
+        self.profile.city = 'Sheffield'
+        self.profile.save()
+        location = self.profile.get_location()
+
+        self.assertEqual(location, 'Sheffield')
+
+    def get_location_country_only(self):
+        """ Tests that get_location returns country name"""
+
+        self.profile.city = None
+        self.profile.country = 'GB'
+        self.profile.save()
+
+        location = self.profile.get_location()
+        self.assertEqual(location, 'United Kingdom')
+
+    def get_location_country_only(self):
+        """ Tests that get_location returns country name"""
+
+        self.profile.city = 'Sheffield'
+        self.profile.country = 'GB'
+        self.profile.save()
+
+        location = self.profile.get_location()
+        self.assertEqual(location, 'Sheffield, United Kingdom')
 
