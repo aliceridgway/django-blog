@@ -64,7 +64,7 @@ class PhotoForm(forms.ModelForm):
         h = self.cleaned_data.get('height')
 
         image = Image.open(profile.profile_picture)
-        cropped_image = image.crop((x, y, w+x, h+y))
+        cropped_image = image.crop((x, y, w + x, h + y))
         resized_image = cropped_image.resize((200, 200), Image.ANTIALIAS)
         resized_image.save(profile.profile_picture.path)
 
@@ -84,7 +84,7 @@ class ProfileForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Field('bio', rows='3'),
-            Field('blog_title', placeholder='Full Stack Developer'),
+            Field('blog_title', placeholder='e.g. Full Stack Developer'),
             Field('city'),
             Field('country'),
             PrependedText('website', 'https://', placeholder='yourwebsite.com'),
