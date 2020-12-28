@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy, reverse
+from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponseRedirect, HttpResponse
@@ -36,6 +37,7 @@ def change_profile_picture(request, username):
                 'photo_url': profile.profile_picture.url
             }
             return HttpResponse(json.dumps(response), content_type='application/json')
+
         else:
-            return HttpResponse('Form Invalid')
+            raise ValidationError('Form Invalid')
 
