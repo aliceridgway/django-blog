@@ -4,6 +4,7 @@ from user.forms import ProfileForm
 
 PROFILE_FIELDS = ['bio', 'blog_title', 'city', 'country', 'website', 'twitter', 'github']
 
+
 class TestProfileForm(TestCase):
 
     def test_fields(self):
