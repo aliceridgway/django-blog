@@ -33,7 +33,7 @@ class TestProfileView(TestCase):
         )
 
         cls.client = Client()
-        cls.url = reverse('profile', args=[cls.user.username])
+        cls.url = reverse('edit_profile', args=[cls.user.username])
 
     def test_login_requirement(self):
         """ Tests that non-logged in users are redirected to the login page."""
@@ -73,7 +73,7 @@ class TestProfileView(TestCase):
         self.client.force_login(new_user)
 
         response = self.client.get(
-            reverse('profile', args=[new_user.username]))
+            reverse('edit_profile', args=[new_user.username]))
 
         self.assertEqual(response.status_code, 200)
         self.assertIn('form', response.context)
@@ -114,7 +114,7 @@ class TestProfileView(TestCase):
             "bio": "Hi, I'm Charlotte. I like books and code."
         }
 
-        profile_url = reverse('profile', args=[new_user.username])
+        profile_url = reverse('edit_profile', args=[new_user.username])
         author_url = reverse('author', args=[new_user.username])
 
         response = self.client.post(profile_url, form_data)

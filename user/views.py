@@ -11,7 +11,7 @@ USER_MODEL = get_user_model()
 
 
 @login_required
-def profile(request, username):
+def edit_profile(request, username):
     """ A view to edit a user profile """
 
     user = USER_MODEL.objects.get(username=username)

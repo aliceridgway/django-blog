@@ -8,9 +8,9 @@
     </div>
 
     {% if user == author %}
-    <a href="{% url 'profile' author.username %}" class="btn btn-outline-secondary mb-3">Edit Profile</a>
+    <a href="{% url 'edit_profile' author.username %}" class="btn btn-outline-secondary mb-3">Edit Profile</a>
     {% else %}
-    <a href="#" class="btn btn-outline-primary">Follow</a>
+    <a href="#" class="btn btn-outline-primary mb-3">Follow</a>
     {% endif %}
 
     <p class="card-text"><i class="fas fa-users text-muted"></i><b> 10</b> Followers · <b>20</b> Following</p>
