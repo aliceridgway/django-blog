@@ -29,8 +29,7 @@
     <form method="post" novalidate class="mt-6">
         {% csrf_token %}
         {% load crispy_forms_tags %}
-        {{ form | crispy}}
-        <input type="submit" value="Save" class="btn btn-primary">
+        {% crispy form %}
     </form>
 </div>
 

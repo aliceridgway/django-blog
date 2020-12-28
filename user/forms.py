@@ -2,9 +2,11 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from .models import User, Profile
-from django_countries.widgets import CountrySelectWidget
-from django.core.files import File
 from PIL import Image
+from crispy_forms.bootstrap import PrependedText, FormActions
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Submit
+from crispy_forms.layout import Field
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -76,7 +78,24 @@ class ProfileForm(forms.ModelForm):
     A form to create/update a user profile. Includes all fields apart from
     profile_picture, which is handled in PhotoForm.
     """
+
+    def __init__(self, *args, **kwargs):
+        super(ProfileForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Field('bio', rows='3'),
+            Field('blog_title', placeholder='Full Stack Developer'),
+            Field('city'),
+            Field('country'),
+            PrependedText('website', 'https://', placeholder='yourwebsite.com'),
+            PrependedText('twitter', '@', placeholder='Your Twitter Handle'),
+            PrependedText('github', 'github.com/', placeholder='Your Github Username'),
+            FormActions(
+                Submit('save_changes', 'Save changes', css_class="btn-primary"),
+            )
+        )
+
     class Meta:
         model = Profile
-        fields = ('bio', 'city', 'country', 'website', 'twitter_username',
-                  'github_username')
+        fields = ('bio', 'blog_title', 'city', 'country', 'website', 'twitter',
+                  'github')
