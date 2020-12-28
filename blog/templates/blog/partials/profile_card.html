@@ -7,6 +7,11 @@
         <h6 class="card-subtitle mb-2 text-muted">@{{author.username}}</h6>
     </div>
 
+    {% if user == author %}
+    <a href="{% url 'profile' author.username %}" class="btn btn-outline-secondary mb-3">Edit Profile</a>
+    {% else %}
+    <a href="#" class="btn btn-outline-primary">Follow</a>
+    {% endif %}
 
     <p class="card-text"><i class="fas fa-users text-muted"></i><b> 10</b> Followers · <b>20</b> Following</p>
     <hr>
@@ -30,10 +35,16 @@
             <td><p class="card-text text-left"><a href='#'>{{author.profile.website}}</a></p></td>
         </tr>
         {% endif %}
-        {% if author.profile.twitter_username %}
+        {% if author.profile.twitter %}
         <tr>
             <td><i class="fab fa-twitter text-muted mr-2"></i></td>
-            <td><p class="card-text text-left"><a href='https://twitter.com/{{author.profile.twitter_username}}'>@{{author.profile.twitter_username}}</a></p></td>
+            <td><p class="card-text text-left"><a href='https://twitter.com/{{author.profile.twitter}}'>@{{author.profile.twitter}}</a></p></td>
+        </tr>
+        {% endif %}
+        {% if author.profile.github %}
+        <tr>
+            <td><i class="fab fa-github text-muted mr-2"></i></td>
+            <td><p class="card-text text-left"><a href='https://github.com/{{author.profile.github}}'>{{author.profile.github}}</a></p></td>
         </tr>
         {% endif %}
     </table>
