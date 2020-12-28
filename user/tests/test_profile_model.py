@@ -71,12 +71,13 @@ class TestProfileModel(TestCase):
         """ Tests that get_location returns city """
 
         self.user.profile.city = 'Sheffield'
+        self.user.profile.country = None
         self.user.profile.save()
         location = self.user.profile.get_location()
 
         self.assertEqual(location, 'Sheffield')
 
-    def get_location_country_only(self):
+    def test_get_location_country_only(self):
         """ Tests that get_location returns country name"""
 
         self.user.profile.city = None
@@ -84,9 +85,9 @@ class TestProfileModel(TestCase):
         self.user.profile.save()
 
         location = self.user.profile.get_location()
-        self.assertEqual(location, 'United Kingdom')
+        self.assertEqual(location, 'UK')
 
-    def get_location_city_and_country(self):
+    def test_get_location_city_and_country(self):
         """ Tests that get_location returns country name"""
 
         self.user.profile.city = 'Sheffield'
@@ -94,4 +95,4 @@ class TestProfileModel(TestCase):
         self.user.profile.save()
 
         location = self.user.profile.get_location()
-        self.assertEqual(location, 'Sheffield, United Kingdom')
+        self.assertEqual(location, 'Sheffield, UK')

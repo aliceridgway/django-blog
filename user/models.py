@@ -4,6 +4,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.core.exceptions import ValidationError
 from django_countries.fields import CountryField
 from datetime import datetime
+from .utils import CountryName
 
 
 def get_filename(self, filename):
@@ -142,13 +143,11 @@ class Profile(models.Model):
         if not self.city and not self.country:
             return
 
-        if self.city:
-            if self.country.name:
-                return f"{self.city}, {self.country.name}"
+        if self.country.name:
+            country = CountryName.get_country_name(self.country.name)
+            if self.city:
+                return f"{self.city}, {country}"
             else:
-                return f"{self.city}"
+                return f"{country}"
         else:
-            return f"{self.country.name}"
-
-
-
+            return f"{self.city}"
