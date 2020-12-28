@@ -1,7 +1,7 @@
 from .forms import CustomUserCreationForm, ProfileForm
 from .models import Profile
 from django.urls import reverse_lazy, reverse
-from django.http import Http404, HttpResponseRedirect, HttpResponse
+from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import CreateView
 from django.contrib.auth import get_user_model
@@ -9,29 +9,19 @@ from django.contrib.auth.decorators import login_required
 
 USER_MODEL = get_user_model()
 
+
 @login_required
 def profile(request, username):
-    """
-    A view to create/edit a user profile.
-
-    POST: checks if the form is valid and saves profile object.
-
-    GET: if a profile already exists, populate a form instance with the current profile. Otherwise, give the user a blank form.
-    """
+    """ A view to edit a user profile """
 
     user = USER_MODEL.objects.get(username=username)
-    user_profile_exists = hasattr(user, 'profile')
 
     if user != request.user:
         raise Http404('This page does not exist')
 
     if request.method == 'POST':
-
-        if user_profile_exists:
-            profile = get_object_or_404(Profile, user=user)
-            form = ProfileForm(request.POST, instance=profile)
-        else:
-            form = ProfileForm(request.POST)
+        profile = get_object_or_404(Profile, user=user)
+        form = ProfileForm(request.POST, instance=profile)
 
         if form.is_valid():
             profile = form.save(commit=False)
@@ -39,15 +29,12 @@ def profile(request, username):
             profile.save()
 
             success_url = reverse('author', args=[user.username])
+
             return HttpResponseRedirect(success_url)
 
-    if request.method == 'GET':
-
-        if user_profile_exists:
-            profile = Profile.objects.get(user=user)
-            form = ProfileForm(instance=profile)
-        else:
-            form = ProfileForm()
+    else:
+        profile = Profile.objects.get(user=user)
+        form = ProfileForm(instance=profile)
 
     context = {
         'page-title': user.username,
