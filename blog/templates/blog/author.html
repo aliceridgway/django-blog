@@ -1,33 +1,59 @@
 {% extends 'blog/base.html' %}
-
+{% load static %}
 
 {% block content %}
 <div class="jumbotron">
+    <div class="container d-flex align-items-center justify-content-center">
+        <div class="rounded-circle bg-light mr-5" style="height:150px; width:150px;">
+            {% if author.profile.profile_picture %}
+            <img src="{{author.profile.profile_picture.url}}" style="object-fit:cover;" class="rounded-circle w-100 h-100"
+                alt="Profile photo for {{author.first_name}} {{author.last_name}}">
+            {% else %}
+            <img src="{% static 'images/people-default.svg' %}" style="object-fit:cover;"
+                class="rounded-circle w-100 h-100 img-fluid"
+                alt="placeholder photo of {{author.first_name}} {{author.last_name}}">
+            {% endif %}
+        </div>
+        <div>
+            <h1><b>{{author.first_name}} {{author.last_name}}</b></h1>
+
+            {% if author.profile.subtitle %}
+            <h4>{{author.profile.subtitle %}</h4>
+            {% endif %}
+        </div>
+
+    </div>
 
 </div>
 <div class="container">
-
-    {% include 'blog/partials/profile_card.html' %}
-
-
-    <h2>Recent Posts</h2>
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-        {% for post in posts %}
+    <div class="row">
         <div class="col-4">
-            <a href="{% url 'post_detail' post.author.username post.slug %}" class="card h-100">
-                <img src="{{ post.feature_image.url }}" class="card-img-top" alt="...">
-                <div class="card-body">
-                    <h5 class="card-title">{{post.title}}</h5>
-                    <p class="card-text">This is a wider card with supporting text below as a natural lead-in to
-                        additional content. This content is a little bit longer.</p>
-                </div>
-                <div class="card-footer">
-                    <small class="text-muted">By {{post.author.username}} on {{post.published}}</small>
-                </div>
-            </a>
+            {% include 'blog/partials/profile_card.html' %}
         </div>
-        {% endfor %}
+        <div class="col-8">
+            <h2>Recent Posts</h2>
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                {% for post in posts %}
+                <div class="col-4">
+                    <a href="{% url 'post_detail' post.author.username post.slug %}" class="card h-100">
+                        <img src="{{ post.feature_image.url }}" class="card-img-top" alt="...">
+                        <div class="card-body">
+                            <h5 class="card-title">{{post.title}}</h5>
+                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to
+                                additional content. This content is a little bit longer.</p>
+                        </div>
+                        <div class="card-footer">
+                            <small class="text-muted">By {{post.author.username}} on {{post.published}}</small>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
+
+
+
 </div>
 
 

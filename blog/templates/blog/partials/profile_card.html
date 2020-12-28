@@ -1,36 +1,41 @@
-<div class="card text-center p-4" style="width: 20rem;">
+{% load static %}
 
-    <div class="rounded-circle bg-light mx-auto m-3" style="height:150px; width:150px;">
-        {% if author.profile.profile_picture %}
-        <img src="{{author.profile.profile_picture.url}}" style="object-fit:cover;" class="rounded-circle w-100 h-100"
-            alt="Profile photo for {{author.first_name}} {{author.last_name}}">
-        {% else %}
-        {% load static %}
-        <img src="{% static 'images/people-default.svg' %}" style="object-fit:cover;"
-            class="rounded-circle w-100 h-100 img-fluid"
-            alt="placeholder photo of {{author.first_name}} {{author.last_name}}">
-        {% endif %}
-    </div>
+<div class="card text-center p-4" style="width: 20rem;">
 
     <div class="card-body">
         <h5 class="card-title"><b>{{author.first_name}} {{author.last_name}}</b></h5>
         <h6 class="card-subtitle mb-2 text-muted">@{{author.username}}</h6>
     </div>
 
-    {% if user == author %}
-    <a href="{% url 'profile' author.username %}" class="btn btn-outline-secondary mb-3">Edit Profile</a>
-    {% else %}
-    <a href="#" class="btn btn-outline-primary">Follow</a>
-    {% endif %}
-
 
     <p class="card-text"><i class="fas fa-users text-muted"></i><b> 10</b> Followers · <b>20</b> Following</p>
     <hr>
-    <p class="card-text text-left"><i class="fas fa-map-marker-alt text-muted mr-2"></i>{{author.profile.city}},
-        {{author.profile.country.name}}</p>
-    <p class="card-text text-left"><i class="fas fa-map-pin text-muted mr-2"></i><a
-            href='#'>https://alicecampkin.com</a></p>
-    <p class="card-text text-left"><i class="fab fa-twitter text-muted mr-2"></i><a href='#'>@alcampk</a></p>
+
+    {% if author.profile.bio %}
+    <h5 class="text-left"><b>About</b></h5>
+    <p class="text-left">{{author.profile.bio | safe}}</p>
+    {% endif %}
+
+    <hr>
+    <table>
+        <tr>
+            <td><i class="fas fa-map-marker-alt text-muted mr-2"></i></td>
+            <td><p class="card-text text-left">{{author.profile.city}}, {{author.profile.country.name}}</p></td>
+        </tr>
+        {% if author.profile.website %}
+        <tr>
+            <td><i class="fas fa-map-pin text-muted mr-2"></i></td>
+            <td><p class="card-text text-left"><a href='#'>{{author.profile.website}}</a></p></td>
+        </tr>
+        {% endif %}
+        {% if author.profile.twitter_username %}
+        <tr>
+            <td><i class="fab fa-twitter text-muted mr-2"></i></td>
+            <td><p class="card-text text-left"><a href='https://twitter.com/{{author.profile.twitter_username}}'>@{{author.profile.twitter_username}}</a></p></td>
+        </tr>
+        {% endif %}
+    </table>
+
     <hr>
 
     <small>Member since {{author.account_created | date:"F Y"}}</small>
