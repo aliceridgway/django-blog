@@ -11,6 +11,7 @@ import json
 USER_MODEL = get_user_model()
 
 
+@require_POST
 @login_required
 def change_profile_picture(request, username):
 
