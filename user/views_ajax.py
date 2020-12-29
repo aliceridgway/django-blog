@@ -2,8 +2,9 @@ from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.http import Http404, HttpResponse
-from user.models import Profile
+from django.views.decorators.http import require_POST
+from django.http import Http404, HttpResponse, JsonResponse
+from user.models import Profile, Follower
 from user.forms import PhotoForm
 import json
 
@@ -36,3 +37,26 @@ def change_profile_picture(request, username):
 
         else:
             raise ValidationError('Form Invalid')
+
+
+@require_POST
+@login_required
+def toggle_user_follow(request):
+
+    user_id = request.POST.get('id')
+    action = request.POST.get('action')
+
+    if user_id and action:
+        try:
+            user = USER_MODEL.objects.get(id=user_id)
+            if action == 'follow':
+                Follower.objects.get_or_create(
+                    user_from=request.user.profile,
+                    user_to=user.profile
+                )
+            else:
+                Follower.objects.filter(user_from=request.user.profile, user_to=user.profile).delete()
+        except USER_MODEL.DoesNotExist:
+            return JsonResponse({'status': 'error'})
+
+    return JsonResponse({'status': 'error'})

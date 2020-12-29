@@ -10,41 +10,59 @@
     {% if user == author %}
     <a href="{% url 'edit_profile' author.username %}" class="btn btn-outline-secondary mb-3">Edit Profile</a>
     {% else %}
-    <a href="#" class="btn btn-outline-primary mb-3">Follow</a>
+    <form method="POST" id="follow" data-url="{% url 'follow' %}" data-id="{{author.id}}"
+        data-action="{% if request.user.profile in author.profile.followers.all %}un{% endif %}follow">
+        {% csrf_token %}
+        <input type="submit" value="{% if request.user.profile not in author.profile.followers.all %}
+        Follow {% else %} Following {% endif %}" class="btn mb-3 bg-primary text-white w-100">
+    </form>
     {% endif %}
 
-    <p class="card-text"><i class="fas fa-users text-muted"></i><b> 10</b> Followers · <b>20</b> Following</p>
-    <hr>
+    <p class="card-text"><i class="fas fa-users text-muted"></i> <b
+            id="follower_count">{{author.profile.followers.count}}</b> Followers · <b
+            id="following_count">{{author.profile.following.count}}</b> Following</p>
 
     {% if author.profile.bio %}
+    <hr>
     <h5 class="text-left"><b>About</b></h5>
     <p class="text-left">{{author.profile.bio | safe}}</p>
+    <hr>
     {% endif %}
 
-    <hr>
+
     <table>
         {% if author.profile.get_location %}
         <tr>
             <td><i class="fas fa-map-marker-alt text-muted mr-2"></i></td>
-            <td><p class="card-text text-left">{{author.profile.get_location}}</p></td>
+            <td>
+                <p class="card-text text-left">{{author.profile.get_location}}</p>
+            </td>
         </tr>
         {% endif %}
         {% if author.profile.website %}
         <tr>
             <td><i class="fas fa-map-pin text-muted mr-2"></i></td>
-            <td><p class="card-text text-left"><a href='#'>{{author.profile.website}}</a></p></td>
+            <td>
+                <p class="card-text text-left"><a href='#'>{{author.profile.website}}</a></p>
+            </td>
         </tr>
         {% endif %}
         {% if author.profile.twitter %}
         <tr>
             <td><i class="fab fa-twitter text-muted mr-2"></i></td>
-            <td><p class="card-text text-left"><a href='https://twitter.com/{{author.profile.twitter}}'>@{{author.profile.twitter}}</a></p></td>
+            <td>
+                <p class="card-text text-left"><a
+                        href='https://twitter.com/{{author.profile.twitter}}'>@{{author.profile.twitter}}</a></p>
+            </td>
         </tr>
         {% endif %}
         {% if author.profile.github %}
         <tr>
             <td><i class="fab fa-github text-muted mr-2"></i></td>
-            <td><p class="card-text text-left"><a href='https://github.com/{{author.profile.github}}'>{{author.profile.github}}</a></p></td>
+            <td>
+                <p class="card-text text-left"><a
+                        href='https://github.com/{{author.profile.github}}'>{{author.profile.github}}</a></p>
+            </td>
         </tr>
         {% endif %}
     </table>
@@ -54,3 +72,4 @@
     <small>Member since {{author.account_created | date:"F Y"}}</small>
 
 </div>
+
