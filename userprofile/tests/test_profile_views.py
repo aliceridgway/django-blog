@@ -24,16 +24,9 @@ class TestProfileView(TestCase):
             username='janedoe',
             password='password123'
         )
-        cls.hacker = USER_MODEL.objects.create_user(
-            first_name='Hacker',
-            last_name='McHackerson',
-            email='hacker@test.com',
-            username='hacker',
-            password='password456'
-        )
 
         cls.client = Client()
-        cls.url = reverse('edit_profile', args=[cls.user.username])
+        cls.url = reverse('edit_profile', args=[])
 
     def test_login_requirement(self):
         """ Tests that non-logged in users are redirected to the login page."""
@@ -48,16 +41,8 @@ class TestProfileView(TestCase):
         self.client.force_login(self.user)
         response = self.client.get(self.url)
 
-        self.assertTemplateUsed(response, 'user/profile.html')
+        self.assertTemplateUsed(response, 'userprofile/profile.html')
         self.assertEqual(response.status_code, 200)
-
-    def test_profile_privacy(self):
-        """ Tests users cannot see profiles of other users. """
-
-        self.client.force_login(self.hacker)
-        response = self.client.get(self.url)
-
-        self.assertEqual(response.status_code, 404)
 
     def test_profile_create(self):
         """ Tests that a new user can create a profile in the same view. """
@@ -73,7 +58,7 @@ class TestProfileView(TestCase):
         self.client.force_login(new_user)
 
         response = self.client.get(
-            reverse('edit_profile', args=[new_user.username]))
+            reverse('edit_profile', args=[]))
 
         self.assertEqual(response.status_code, 200)
         self.assertIn('form', response.context)
@@ -114,7 +99,7 @@ class TestProfileView(TestCase):
             "bio": "Hi, I'm Charlotte. I like books and code."
         }
 
-        profile_url = reverse('edit_profile', args=[new_user.username])
+        profile_url = reverse('edit_profile', args=[])
         author_url = reverse('author', args=[new_user.username])
 
         response = self.client.post(profile_url, form_data)
@@ -142,16 +127,9 @@ class TestProfilePhotoView(TestCase):
             username='janedoe',
             password='password123'
         )
-        cls.hacker = USER_MODEL.objects.create_user(
-            first_name='Hacker',
-            last_name='McHackerson',
-            email='hacker@test.com',
-            username='hacker',
-            password='password456'
-        )
 
         cls.client = Client()
-        cls.url = reverse('change_profile_picture', args=[cls.user.username])
+        cls.url = reverse('change_profile_picture', args=[])
 
     def test_get_request(self):
         """ Test that a GET request returns a 404. (This view only accepts POST requests)"""
@@ -171,19 +149,6 @@ class TestProfilePhotoView(TestCase):
         response = self.client.post(self.url, form_data)
 
         self.assertEqual(response.status_code, 302)
-
-    def test_authorisation(self):
-        """ Tests that users can only change their own profile picture. """
-
-        self.client.force_login(self.hacker)
-
-        form_data = {
-            'user': self.user,
-            'profile_picture': open('userprofile/tests/thePOST-default.jpg', 'rb'),
-        }
-        response = self.client.post(self.url, form_data)
-
-        self.assertEqual(response.status_code, 404)
 
     def test_invalid_form(self):
         """ Tests that a validation error is raised if the form is invalid."""
@@ -222,7 +187,7 @@ class TestCoverPhotoView(TestCase):
     Things to test:
     - Does a GET request give a 404?
     - Does a POST request work?
-    - Are users only able to change their own profile picture?
+    - Are non-logged in users blocked?
     """
 
     @classmethod
@@ -233,13 +198,6 @@ class TestCoverPhotoView(TestCase):
             email='janedoe@test.com',
             username='janedoe',
             password='password123'
-        )
-        cls.hacker = USER_MODEL.objects.create_user(
-            first_name='Hacker',
-            last_name='McHackerson',
-            email='hacker@test.com',
-            username='hacker',
-            password='password456'
         )
 
         cls.client = Client()

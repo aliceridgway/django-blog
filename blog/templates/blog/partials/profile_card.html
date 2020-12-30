@@ -20,7 +20,7 @@
     </div>
 
     {% if user == author %}
-    <a href="{% url 'edit_profile' author.username %}" class="btn btn-outline-secondary mb-3">Edit Profile</a>
+    <a href="{% url 'edit_profile' %}" class="btn btn-outline-secondary mb-3">Edit Profile</a>
     {% else %}
     <form method="POST" id="follow" data-url="{% url 'follow' %}" data-id="{{author.id}}"
         data-action="{% if request.user.profile in author.profile.followers.all %}un{% endif %}follow">

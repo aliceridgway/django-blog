@@ -9,9 +9,9 @@
     <div class="d-flex align-items-center mt-3 container">
 
         <form method="post" novalidate enctype="multipart/form-data" id="profileUpload" class="mr-3"
-            data-url="{{photo_upload_url}}">
+            data-url="{% url 'change_profile_picture' %}">
             {% csrf_token %}
-            {% include 'user/partials/profilepicture_widget.html' %}
+            {% include 'userprofile/partials/profilepicture_widget.html' %}
         </form>
 
         <div>
@@ -23,7 +23,7 @@
 
 <div class="container">
 
-    {% include 'user/partials/cropper_modal.html' %}
+    {% include 'userprofile/partials/cropper_modal.html' %}
 
     <h2 class="mt-6">Edit Profile</h2>
     <form method="post" novalidate class="mt-6">
