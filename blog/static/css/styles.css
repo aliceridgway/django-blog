@@ -25,4 +25,45 @@
 .profile_picture__overlay:hover {
   opacity: 1;
 }
+
+.cover_photo {
+  position: relative;
+}
+
+.cover_photo__words {
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  position: relative;
+  margin: auto;
+  z-index: 99;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.cover_photo__words h1, .cover_photo__words h2, .cover_photo__words h3, .cover_photo__words h4, .cover_photo__words h5, .cover_photo__words h6 {
+  -webkit-box-shadow: -5px 5px 15px 5px rgba(0, 0, 0, 0.1);
+          box-shadow: -5px 5px 15px 5px rgba(0, 0, 0, 0.1);
+}
+
+.cover_photo__img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  -o-object-fit: contain;
+     object-fit: contain;
+}
+
+.cover_photo__form {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 98;
+}
+
+.cover_photo__form input[type=file] {
+  display: none;
+}
 /*# sourceMappingURL=styles.css.map */

@@ -1,8 +1,20 @@
 {% load static %}
 
-<div class="card text-center p-4" style="width: 20rem;">
+<div class="card text-center p-4 position-relative" style="width: 20rem;">
 
-    <div class="card-body">
+    <div class="position-absolute rounded-circle bg-light"
+        style="height:150px; width:150px; top:-100px; left:50%; transform:translateX(-50%); box-shadow: -5px 5px 15px 5px rgba(0,0,0,0.1);">
+        {% if author.profile.profile_picture %}
+        <img src="{{author.profile.profile_picture.url}}" style="object-fit:cover;"
+            class="rounded-circle w-100 h-100" alt="Profile photo for {{author.first_name}} {{author.last_name}}">
+        {% else %}
+        <img src="{% static 'images/people-default.svg' %}" style="object-fit:cover;"
+            class="rounded-circle w-100 h-100 img-fluid"
+            alt="placeholder photo of {{author.first_name}} {{author.last_name}}">
+        {% endif %}
+    </div>
+
+    <div class="card-body mt-5">
         <h5 class="card-title"><b>{{author.first_name}} {{author.last_name}}</b></h5>
         <h6 class="card-subtitle mb-2 text-muted">@{{author.username}}</h6>
     </div>

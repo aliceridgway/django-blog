@@ -6,6 +6,7 @@ from . import views_ajax as ajax_views
 urlpatterns = [
     path('<str:username>/profile/edit', views.edit_profile, name='edit_profile'),
     path('<str:username>/profile/photo/change', ajax_views.change_profile_picture, name='change_profile_picture'),
+    path('profile/coverphoto', ajax_views.change_cover_photo, name='change_cover_photo'),
     path('users/follow', ajax_views.toggle_user_follow, name='follow'),
     path('register', views.Register.as_view(), name='register'),
     path('login', auth_views.LoginView.as_view(

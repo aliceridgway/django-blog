@@ -99,3 +99,41 @@ class ProfileForm(forms.ModelForm):
         model = Profile
         fields = ('bio', 'blog_title', 'city', 'country', 'website', 'twitter',
                   'github')
+
+
+class CoverPhotoForm(forms.ModelForm):
+    """
+    A form for uploading cover photos. This is used with Cropper.js on the front-end.
+    x, y, width & height are supplied by Cropper.js and are used here to crop the photo
+    using Pillow.
+    """
+
+    x = forms.FloatField(widget=forms.HiddenInput())
+    y = forms.FloatField(widget=forms.HiddenInput())
+    width = forms.FloatField(widget=forms.HiddenInput())
+    height = forms.FloatField(widget=forms.HiddenInput())
+
+    class Meta:
+        model = Profile
+        fields = ('cover_photo', 'x', 'y', 'width',
+                  'height')
+
+    def save(self, user, commit=True):
+
+        profile = super().save()
+
+        profile.user = user
+
+        x = self.cleaned_data.get('x')
+        y = self.cleaned_data.get('y')
+        w = self.cleaned_data.get('width')
+        h = self.cleaned_data.get('height')
+
+        image = Image.open(profile.cover_photo)
+        cropped_image = image.crop((x, y, w + x, h + y))
+        resized_image = cropped_image.resize((1920, 300), Image.ANTIALIAS)
+        resized_image.save(profile.cover_photo.path)
+
+        profile.save()
+
+        return profile

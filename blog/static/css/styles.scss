@@ -22,3 +22,41 @@
         opacity: 1;
     }
 }
+
+.cover_photo{
+    position: relative;
+
+    &__words{
+        width:fit-content;
+        position: relative;
+        margin:auto;
+        z-index: 99;
+        text-align: center;
+        margin-top: 2rem;
+
+        h1, h2, h3, h4, h5, h6{
+            box-shadow: -5px 5px 15px 5px rgba(0,0,0,0.1);
+        }
+    }
+
+    &__img{
+        position: absolute;
+        top:0;
+        left:0;
+        width:100%;
+        height:100%;
+        object-fit:contain;
+    }
+
+    &__form{
+        position: absolute;
+        top:10px;
+        right:10px;
+        z-index: 98;
+
+        input[type=file]{
+            display: none;
+        }
+    }
+
+}

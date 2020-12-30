@@ -215,3 +215,82 @@ class TestProfilePhotoView(TestCase):
         response = self.client.post(self.url, form_data)
 
         self.assertEqual(response.status_code, 200)
+
+
+class TestCoverPhotoView(TestCase):
+    """
+    Things to test:
+    - Does a GET request give a 404?
+    - Does a POST request work?
+    - Are users only able to change their own profile picture?
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = USER_MODEL.objects.create_user(
+            first_name='Jane',
+            last_name='Doe',
+            email='janedoe@test.com',
+            username='janedoe',
+            password='password123'
+        )
+        cls.hacker = USER_MODEL.objects.create_user(
+            first_name='Hacker',
+            last_name='McHackerson',
+            email='hacker@test.com',
+            username='hacker',
+            password='password456'
+        )
+
+        cls.client = Client()
+        cls.url = reverse('change_cover_photo', args=[])
+
+    def test_get_request(self):
+        """ Test that a GET request returns a 404. (This view only accepts POST requests)"""
+        self.client.force_login(self.user)
+        response = self.client.get(self.url)
+
+        self.assertGreaterEqual(response.status_code, 400)
+        self.assertLessEqual(response.status_code, 500)
+
+    def test_login_requirement(self):
+        """ Tests that a non-logged-in user has request blocked"""
+
+        form_data = {
+            'user': self.user,
+            'cover_photo': open('user/tests/thePOST-default.jpg', 'rb'),
+        }
+        response = self.client.post(self.url, form_data)
+
+        self.assertEqual(response.status_code, 302)
+
+    def test_invalid_form(self):
+        """ Tests that a validation error is raised if the form is invalid."""
+
+        self.client.force_login(self.user)
+
+        form_data = {
+            'user': self.user,
+            'cover_photo': open('user/tests/thePOST-default.jpg', 'rb'),
+        }
+
+        with self.assertRaises(ValidationError):
+            self.client.post(self.url, form_data)
+
+    def test_post_request(self):
+        """ Tests that POST request is successful for a logged-in user
+         attempting to upload profile picture to their own profile."""
+
+        self.client.force_login(self.user)
+
+        form_data = {
+            'cover_photo': open('user/tests/thePOST-default.jpg', 'rb'),
+            'x': 0.0,
+            'y': 0.0,
+            'width': 1920,
+            'height': 300,
+        }
+
+        response = self.client.post(self.url, form_data)
+
+        self.assertEqual(response.status_code, 200)

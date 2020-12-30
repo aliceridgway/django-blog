@@ -2,27 +2,34 @@
 {% load static %}
 
 {% block content %}
-<div class="jumbotron">
-    <div class="container d-flex align-items-center justify-content-center">
-        <div class="rounded-circle bg-light mr-5" style="height:150px; width:150px;">
-            {% if author.profile.profile_picture %}
-            <img src="{{author.profile.profile_picture.url}}" style="object-fit:cover;"
-                class="rounded-circle w-100 h-100" alt="Profile photo for {{author.first_name}} {{author.last_name}}">
-            {% else %}
-            <img src="{% static 'images/people-default.svg' %}" style="object-fit:cover;"
-                class="rounded-circle w-100 h-100 img-fluid"
-                alt="placeholder photo of {{author.first_name}} {{author.last_name}}">
-            {% endif %}
-        </div>
-        <div>
-            <h1><b>{{author.first_name}} {{author.last_name}}</b></h1>
+<div class="jumbotron cover_photo" style="height: 300px;">
+    <div class="cover_photo__words">
+            <h1 class='text-white pl-3 pr-3 pt-1 pb-1' style='background:rgba(0,0,0,0.6);'><b>{{author.first_name}} {{author.last_name}}</b></h1>
 
             {% if author.profile.blog_title %}
-            <h4>{{author.profile.blog_title}}</h4>
+            <h4 class='text-white pl-3 pr-3 pt-1 pb-1' style='background:rgba(0,0,0,0.6);'>
+                {{author.profile.blog_title}}</h4>
             {% endif %}
-        </div>
-
     </div>
+
+    {% if author.profile.cover_photo %}
+    <img src="{{author.profile.cover_photo.url}}" class="cover_photo__img"
+        alt="cover photo for {{author.first_name}} {{author.last_name}}">
+    {% endif %}
+
+    {% if author == request.user %}
+    <form class="cover_photo__form" method='POST' id="coverphotoUpload" data-url="{% url 'change_cover_photo' %}">
+        {% csrf_token %}
+        <label for="id_cover_photo" class="btn btn-light">
+            Change
+        </label>
+        <input type="file" name="cover_photo" id="id_cover_photo">
+        <input type="hidden" name="x" id="id_x">
+        <input type="hidden" name="y" id="id_y">
+        <input type="hidden" name="width" id="id_width">
+        <input type="hidden" name="height" id="id_height">
+    </form>
+    {% endif %}
 
 </div>
 <div class="container">
@@ -51,6 +58,11 @@
             </div>
         </div>
     </div>
-
 </div>
+
+{% include 'blog/partials/coverphoto_cropper_modal.html' %}
+{% endblock %}
+
+{% block javascript %}
+<script src="{% static 'js/coverphoto_upload.js' %}"></script>
 {% endblock %}
