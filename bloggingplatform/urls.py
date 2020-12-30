@@ -23,6 +23,7 @@ urlpatterns = [
     path('', index, name='index'),
     path('admin/', admin.site.urls),
     path('', include('user.urls')),
+    path('profile/', include('userprofile.urls')),
     # blog urls must go last!
     path('', include('blog.urls')),
 ]

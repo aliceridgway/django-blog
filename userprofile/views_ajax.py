@@ -4,8 +4,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.http import Http404, HttpResponse, JsonResponse
-from user.models import Profile, Follower
-from user.forms import PhotoForm, CoverPhotoForm
+from .models import Profile, Follower
+from .forms import PhotoForm, CoverPhotoForm
 import json
 
 USER_MODEL = get_user_model()

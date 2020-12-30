@@ -1,8 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-
-from .models import User, Profile, Follower
+from .models import User
 from .forms import CustomUserCreationForm, UserChangeForm
 
 
@@ -32,8 +31,7 @@ class UserAdmin(BaseUserAdmin):
 
 
 admin.site.register(User, UserAdmin)
-admin.site.register(Profile)
-admin.site.register(Follower)
+
 
 # Groups are not required as we're not using the permissions mixin with our User model
 admin.site.unregister(Group)

@@ -1,5 +1,5 @@
 from django.test import TestCase
-from user.forms import ProfileForm
+from userprofile.forms import ProfileForm
 
 
 PROFILE_FIELDS = ['bio', 'blog_title', 'city', 'country', 'website', 'twitter', 'github']

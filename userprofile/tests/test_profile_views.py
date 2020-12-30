@@ -2,7 +2,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
-from user.models import Profile
+from userprofile.models import Profile
 
 USER_MODEL = get_user_model()
 
@@ -166,7 +166,7 @@ class TestProfilePhotoView(TestCase):
 
         form_data = {
             'user': self.user,
-            'profile_picture': open('user/tests/thePOST-default.jpg', 'rb'),
+            'profile_picture': open('userprofile/tests/thePOST-default.jpg', 'rb'),
         }
         response = self.client.post(self.url, form_data)
 
@@ -179,7 +179,7 @@ class TestProfilePhotoView(TestCase):
 
         form_data = {
             'user': self.user,
-            'profile_picture': open('user/tests/thePOST-default.jpg', 'rb'),
+            'profile_picture': open('userprofile/tests/thePOST-default.jpg', 'rb'),
         }
         response = self.client.post(self.url, form_data)
 
@@ -192,7 +192,7 @@ class TestProfilePhotoView(TestCase):
 
         form_data = {
             'user': self.user,
-            'profile_picture': open('user/tests/thePOST-default.jpg', 'rb'),
+            'profile_picture': open('userprofile/tests/thePOST-default.jpg', 'rb'),
         }
 
         with self.assertRaises(ValidationError):
@@ -205,7 +205,7 @@ class TestProfilePhotoView(TestCase):
         self.client.force_login(self.user)
 
         form_data = {
-            'profile_picture': open('user/tests/thePOST-default.jpg', 'rb'),
+            'profile_picture': open('userprofile/tests/thePOST-default.jpg', 'rb'),
             'x': 0.0,
             'y': 0.0,
             'width': 20.0,
@@ -258,7 +258,7 @@ class TestCoverPhotoView(TestCase):
 
         form_data = {
             'user': self.user,
-            'cover_photo': open('user/tests/thePOST-default.jpg', 'rb'),
+            'cover_photo': open('userprofile/tests/thePOST-default.jpg', 'rb'),
         }
         response = self.client.post(self.url, form_data)
 
@@ -271,7 +271,7 @@ class TestCoverPhotoView(TestCase):
 
         form_data = {
             'user': self.user,
-            'cover_photo': open('user/tests/thePOST-default.jpg', 'rb'),
+            'cover_photo': open('userprofile/tests/thePOST-default.jpg', 'rb'),
         }
 
         with self.assertRaises(ValidationError):
@@ -284,7 +284,7 @@ class TestCoverPhotoView(TestCase):
         self.client.force_login(self.user)
 
         form_data = {
-            'cover_photo': open('user/tests/thePOST-default.jpg', 'rb'),
+            'cover_photo': open('userprofile/tests/thePOST-default.jpg', 'rb'),
             'x': 0.0,
             'y': 0.0,
             'width': 1920,

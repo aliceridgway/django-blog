@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.db import models
 from django.contrib.auth import get_user_model
-from user.models import Profile, get_filename
+from userprofile.models import Profile, get_filename
 from datetime import datetime
 
 USER_MODEL = get_user_model()
