@@ -12,8 +12,6 @@ const button = $("#follow input[type='submit']")[0]
 
 form.submit((e) => {
     e.preventDefault()
-    console.log('form submitted')
-    console.log(e.target)
 
     const action = e.target.dataset.action
     const formData = new FormData(e.target)
