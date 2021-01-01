@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls import url
 from django.conf import settings
 from django.conf.urls.static import static
 from blog.views import index
@@ -24,6 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('user.urls')),
     path('profile/', include('userprofile.urls')),
+    path('summernote/', include('django_summernote.urls')),
     # blog urls must go last!
     path('', include('blog.urls')),
 ]

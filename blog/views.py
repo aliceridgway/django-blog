@@ -1,14 +1,16 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404
 from django.views.generic import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
+from .forms import PostForm
 from .models import Post
 import datetime
 
 USER_MODEL = get_user_model()
+
 
 def index(request):
     """ Displays a list of posts """
@@ -16,10 +18,11 @@ def index(request):
     posts = Post.objects.filter(status='published').order_by('-published')
 
     context = {
-        'page_title':'The POST',
+        'page_title': 'The POST',
         'posts': posts
     }
     return render(request, 'blog/index.html', context)
+
 
 @login_required
 def draft(request, username, slug):
@@ -35,6 +38,7 @@ def draft(request, username, slug):
             'post': post,
         }
         return render(request, 'blog/draft.html', context)
+
 
 @login_required
 def publish_post(request, username, slug):
@@ -52,6 +56,7 @@ def publish_post(request, username, slug):
         redirect_url = reverse('post_detail', args=[username, slug])
 
         return HttpResponseRedirect(redirect_url)
+
 
 def post_detail(request, username, slug):
     """
@@ -77,6 +82,7 @@ def post_detail(request, username, slug):
     else:
         raise Http404("Oops! We couldn't find that post")
 
+
 def author(request, username):
     """ Returns published posts by a given author and render's author's public page """
 
@@ -101,7 +107,8 @@ class AddPost(LoginRequiredMixin, CreateView):
 
     model = Post
     template_name = 'blog/add.html'
-    fields = ['title', 'feature_image', 'body']
+    form_class = PostForm
+    # fields = ['title', 'feature_image', 'body']
 
     def form_valid(self, form):
         form.instance.author = self.request.user

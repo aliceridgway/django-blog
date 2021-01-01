@@ -5,12 +5,11 @@
 #    pip-compile --output-file=requirements.txt requirements.in
 #
 django-autoslug==1.9.8    # via -r requirements.in
-django-ckeditor==6.0.0    # via -r requirements.in
 django-countries==7.0     # via -r requirements.in
 django-crispy-forms==1.10.0  # via -r requirements.in
 django-environ==0.4.5     # via -r requirements.in
-django-js-asset==1.2.2    # via django-ckeditor
-django==2.2.17            # via -r requirements.in
+django-summernote==0.8.11.6  # via -r requirements.in
+django==2.2.17            # via -r requirements.in, django-summernote
 pillow==8.0.1             # via -r requirements.in
 pytz==2020.4              # via django
 sqlparse==0.4.1           # via django
