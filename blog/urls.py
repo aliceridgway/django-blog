@@ -5,6 +5,7 @@ from . import views_ajax
 urlpatterns = [
     path('add', views.AddPost.as_view(), name='add'),
     path('comment', views_ajax.add_comment, name='add_comment'),
+    path('comment/delete', views_ajax.delete_comment, name='delete_comment'),
     path('<str:username>', views.author, name='author'),
     path('<str:username>/<slug:slug>', views.post_detail, name='post_detail'),
     path('<str:username>/<slug:slug>/draft', views.draft, name='draft'),

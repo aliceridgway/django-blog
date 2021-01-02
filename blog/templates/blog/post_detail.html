@@ -16,23 +16,35 @@
     <div>
         <h2>Comments</h2>
 
-        {% if comments %}
+
         <div class="comments-list">
+            {% if comments %}
             {% for comment in comments %}
-            <div class="card mb-2">
-                <div class="card-header">
+            <div class="card mb-2" id="comment-{{comment.id}}">
+                <div class="card-header d-flex align-items-center justify-content-between">
                     <p class="m-0">By <b>{{comment.user_from.user.first_name}} {{comment.user_from.user.last_name}}</b>
-                        <em class="float-right">{{comment.timestamp}}</em></p>
+                    </p>
+                    <em>{{comment.timestamp}}
+
+                        {% if comment.user_from.user == request.user %}
+                        <form method="POST" data-commentid="{{comment.id}}" data-url="{% url 'delete_comment' %}"
+                            style="display: inline-block;" class="delete-comment-form pl-2">
+                            {% csrf_token %}
+                            <input type="submit" value="delete" class="btn btn-sm btn-outline-danger">
+                        </form>
+                        {% endif %}
+                    </em>
+
                 </div>
                 <div class="card-body">
                     {{ comment.body }}
                 </div>
             </div>
             {% endfor %}
+            {% endif %}
         </div>
         {% else %}
         <p>No comments yet</p>
-        {% endif %}
 
         {% if post.author != request.user %}
         <div class="card">
@@ -56,4 +68,5 @@
 
 {% block javascript %}
 <script src="{% static 'js/comment.js' %}"></script>
+<script src="{% static 'js/delete_comment.js' %}"></script>
 {% endblock %}

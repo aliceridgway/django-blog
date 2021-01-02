@@ -37,3 +37,22 @@ def add_comment(request):
 
     else:
         raise PermissionDenied('You are not authorised to comment')
+
+
+@require_POST
+@login_required
+def delete_comment(request):
+
+    comment_id = request.POST.get('comment_id')
+
+    try:
+        comment = Comment.objects.get(id=comment_id)
+    except Comment.DoesNotExist:
+        raise ValueError('This comment does not exist')
+
+    if comment.user_from.user != request.user:
+        raise PermissionDenied('Permission Denied')
+
+    comment.delete()
+
+    return JsonResponse({'status': 'success'})
