@@ -1,12 +1,10 @@
-import datetime
 from blog.models import Post, get_filename
-from django.test import TestCase, Client
-from django.urls import reverse
-from django.utils import timezone
+from django.test import TestCase
 from django.contrib.auth import get_user_model
 
 # Create your tests here.
 USER_MODEL = get_user_model()
+
 
 class TestPostModel(TestCase):
     """
@@ -39,11 +37,10 @@ class TestPostModel(TestCase):
         self.assertEqual(self.post.title, 'My blog post')
         self.assertEqual(self.post.author, self.user)
 
-
     def test_post_str(self):
         """ Tests the __str__ of the Post model"""
 
-        self.assertEqual(str(self.post),'My blog post | by user123')
+        self.assertEqual(str(self.post), 'My blog post | by user123')
 
     def test_creates_a_slug(self):
         """ Tests a slug is automatically created """
@@ -60,6 +57,7 @@ class TestPostModel(TestCase):
         )
 
         self.assertNotEqual(self.post.slug, second_title.slug)
+
 
 class TestFeatureImages(TestCase):
 
@@ -82,7 +80,7 @@ class TestFeatureImages(TestCase):
     def test_get_filename(self):
         """ Tests that uploaded images get a custom filename based on author's username and the post's creation date"""
 
-        path = get_filename(self.post,'arbitraryfilename.jpg')
+        path = get_filename(self.post, 'arbitraryfilename.jpg')
 
         t = self.post.created
         datetime_str = f"{t.year}-{t.month}-{t.day}-{t.hour}{t.minute}{t.second}"
