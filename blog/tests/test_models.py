@@ -1,4 +1,4 @@
-from blog.models import Post, get_filename
+from blog.models import Post, Like, Comment, get_filename
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 
@@ -89,3 +89,110 @@ class TestFeatureImages(TestCase):
         expected_path = f"uploads/{username}_{datetime_str}.jpg"
 
         self.assertEqual(path, expected_path)
+
+
+class TestLikeModel(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+
+        cls.u1 = USER_MODEL.objects.create_user(
+            first_name='Michael',
+            last_name='R',
+            username='michaelr',
+            email='michael@test.com',
+            password='password123'
+        )
+
+        cls.u2 = USER_MODEL.objects.create_user(
+            first_name='Kate',
+            last_name='S',
+            username='katewrites',
+            email='kate@test.com',
+            password='password123'
+        )
+        cls.post = Post.objects.create(
+            author=cls.u2,
+            title='My Test Post',
+            body='This is my test post'
+        )
+        cls.like = Like.objects.create(
+            user_from=cls.u1.profile,
+            user_to=cls.u2.profile,
+            post=cls.post
+        )
+
+    def test_like_instance(self):
+        """ Tests we can instantiate follow object """
+
+        self.assertTrue(hasattr(self.like, 'user_from'))
+        self.assertTrue(hasattr(self.like, 'user_to'))
+        self.assertTrue(hasattr(self.like, 'timestamp'))
+        self.assertEqual(self.like.user_from, self.u1.profile)
+
+    def test_like_str(self):
+        """ Tests string representation of follow object """
+
+        expected_str = 'michaelr liked a post by katewrites'
+        self.assertEqual(str(self.like), expected_str)
+
+    def test_notification_str(self):
+        """ Tests how event will be represented in a notification """
+
+        expected_str = 'michaelr liked My Test Post.'
+
+        self.assertEqual(self.like.get_notification_str(), expected_str)
+
+
+class TestCommentModel(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+
+        cls.u1 = USER_MODEL.objects.create_user(
+            first_name='Michael',
+            last_name='R',
+            username='michaelr',
+            email='michael@test.com',
+            password='password123'
+        )
+
+        cls.u2 = USER_MODEL.objects.create_user(
+            first_name='Kate',
+            last_name='S',
+            username='katewrites',
+            email='kate@test.com',
+            password='password123'
+        )
+        cls.post = Post.objects.create(
+            author=cls.u2,
+            title='My Test Post',
+            body='This is my test post'
+        )
+        cls.comment = Comment.objects.create(
+            user_from=cls.u1.profile,
+            user_to=cls.u2.profile,
+            post=cls.post,
+            body='I enjoyed reading this post.'
+        )
+
+    def test_comment_instance(self):
+        """ Tests we can instantiate follow object """
+
+        self.assertTrue(hasattr(self.comment, 'user_from'))
+        self.assertTrue(hasattr(self.comment, 'user_to'))
+        self.assertTrue(hasattr(self.comment, 'timestamp'))
+        self.assertEqual(self.comment.user_from, self.u1.profile)
+
+    def test_comment_str(self):
+        """ Tests string representation of follow object """
+
+        expected_str = 'michaelr commented on a post by katewrites'
+        self.assertEqual(str(self.comment), expected_str)
+
+    def test_notification_str(self):
+        """ Tests how event will be represented in a notification """
+
+        expected_str = 'michaelr commented on My Test Post.'
+
+        self.assertEqual(self.comment.get_notification_str(), expected_str)

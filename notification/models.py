@@ -1,5 +1,4 @@
 from django.db import models
-from blog.models import Post
 from userprofile.models import Profile
 from abc import abstractmethod
 
@@ -34,24 +33,3 @@ class Follow(Event):
 
     def get_notification_str(self):
         return f"{self.user_from.user.username} followed you."
-
-
-class Comment(Event):
-    post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)
-    body = models.TextField()
-
-    def __str__(self):
-        return f"{self.user_from.user.username} commented on a post by {self.user_to.user.username}"
-
-    def get_notification_str(self):
-        return f"{self.user_from.user.username} commented on {self.post.title}."
-
-
-class Like(Event):
-    post = models.ForeignKey(Post, related_name='likes', on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"{self.user_from.user.username} liked a post by {self.user_to.user.username}"
-
-    def get_notification_str(self):
-        return f"{self.user_from.user.username} liked {self.post.title}."
