@@ -41,10 +41,10 @@
                 </div>
             </div>
             {% endfor %}
-            {% endif %}
         </div>
         {% else %}
         <p>No comments yet</p>
+        {% endif %}
 
         {% if post.author != request.user %}
         <div class="card">
@@ -67,6 +67,6 @@
 {% endblock %}
 
 {% block javascript %}
-<script src="{% static 'js/comment.js' %}"></script>
+<script src="{% static 'js/add_comment.js' %}"></script>
 <script src="{% static 'js/delete_comment.js' %}"></script>
 {% endblock %}
