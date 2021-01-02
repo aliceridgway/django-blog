@@ -1,4 +1,5 @@
 {% extends 'blog/base.html' %}
+{% load static %}
 
 {% block content %}
 
@@ -11,7 +12,48 @@
     <small>By <a href="{% url 'author' post.author.username %}">{{post.author.username}}</a>. Published
         {{post.published}}</small>
     <p>{{ post.body | safe}}</p>
+
+    <div>
+        <h2>Comments</h2>
+
+        {% if comments %}
+        <div class="comments-list">
+            {% for comment in comments %}
+            <div class="card mb-2">
+                <div class="card-header">
+                    <p class="m-0">By <b>{{comment.user_from.user.first_name}} {{comment.user_from.user.last_name}}</b>
+                        <em class="float-right">{{comment.timestamp}}</em></p>
+                </div>
+                <div class="card-body">
+                    {{ comment.body }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>No comments yet</p>
+        {% endif %}
+
+        {% if post.author != request.user %}
+        <div class="card">
+            <div class="card-header">
+                <b>Add a comment</b>
+                <form method='POST' class="comment-form" data-postid="{{post.id}}" data-url="{% url 'add_comment' %}"
+                    data-firstname="{{request.user.first_name}}" data-lastname={{request.user.last_name}}>
+                    {% csrf_token %}
+                    {% load crispy_forms_tags %}
+                    {{comment_form | crispy}}
+                    <input type="submit" value="Add" class="btn btn-primary">
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
 </div>
 
 
+{% endblock %}
+
+{% block javascript %}
+<script src="{% static 'js/comment.js' %}"></script>
 {% endblock %}

@@ -5,7 +5,7 @@ from django.views.generic import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .forms import PostForm
+from .forms import PostForm, CommentForm
 from .models import Post
 import datetime
 
@@ -67,20 +67,22 @@ def post_detail(request, username, slug):
 
     post = get_object_or_404(Post, author__username=username, slug=slug)
 
-    if post.status == 'published':
+    if post.status != 'published':
+        if request.user == post.author:
+            redirect_url = reverse('draft', args=[username, slug])
+            return HttpResponseRedirect(redirect_url)
+        else:
+            raise Http404("Oops! We couldn't find that post")
 
+    else:
         context = {
             'page_title': post.title,
-            'post': post
+            'post': post,
+            'comments': post.comments.all(),
+            'comment_form': CommentForm()
         }
-        return render(request, 'blog/post_detail.html', context)
 
-    elif request.user == post.author:
-        # Redirect author to their draft post
-        redirect_url = reverse('draft', args=[username, slug])
-        return HttpResponseRedirect(redirect_url)
-    else:
-        raise Http404("Oops! We couldn't find that post")
+        return render(request, 'blog/post_detail.html', context)
 
 
 def author(request, username):
