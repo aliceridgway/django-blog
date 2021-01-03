@@ -16,7 +16,8 @@
     <div>
         <h2>Comments</h2>
 
-        <div class="comments-list" data-ajaxurl="{% url 'get_comments' post.id %}">
+        <div class="comments-list" data-ajaxurl="{% url 'get_comments' post.id %}" data-userid="{{request.user.id}}"
+            data-deleteurl="{% url 'delete_comment' %}" data-csrf="{{ csrf_token }}">
             <p><b class="comment-count"></b> comments</p>
         </div>
 
@@ -25,7 +26,7 @@
             <div class="card-header">
                 <b>Add a comment</b>
                 <form method='POST' class="comment-form" data-postid="{{post.id}}" data-url="{% url 'add_comment' %}"
-                    data-firstname="{{request.user.first_name}}" data-lastname={{request.user.last_name}}>
+                    data-userid="{{request.user.id}}">
                     {% csrf_token %}
                     {% load crispy_forms_tags %}
                     {{comment_form | crispy}}
@@ -41,7 +42,8 @@
 {% endblock %}
 
 {% block javascript %}
-<script src="{% static 'js/get_comments.js' %}"></script>
-<script src="{% static 'js/add_comment.js' %}"></script>
-<script src="{% static 'js/delete_comment.js' %}"></script>
+<script>dayjs.extend(window.dayjs_plugin_relativeTime)</script>
+<script src="{% static 'js/get_comments.js' %}" type="module"></script>
+<script src="{% static 'js/add_comment.js' %}" type="module"></script>
+<script src="{% static 'js/delete_comment.js' %}" type="module"></script>
 {% endblock %}

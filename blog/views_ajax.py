@@ -22,13 +22,14 @@ def get_comments(request, pk):
         user = comment.user_from.user
 
         comment_list.append({
+            'id': comment.id,
             'user_from': {
                 'id': user.id,
                 'first_name': user.first_name,
                 'last_name': user.last_name,
             },
             'timestamp': comment.timestamp.isoformat(),
-            'body': comment.body
+            'body': comment.body,
         })
 
     response = {
@@ -37,6 +38,7 @@ def get_comments(request, pk):
     }
 
     return JsonResponse(response)
+
 
 @require_POST
 @login_required
@@ -60,7 +62,21 @@ def add_comment(request):
             comment.post = post
             comment.save()
 
-            return JsonResponse({'status': 'success'})
+            response = {
+                'status': 'success',
+                'comment': {
+                    'id': comment.id,
+                    'user_from': {
+                        'id': request.user.id,
+                        'first_name': request.user.first_name,
+                        'last_name': request.user.last_name,
+                    },
+                    'timestamp': comment.timestamp.isoformat(),
+                    'body': comment.body,
+                }
+            }
+
+            return JsonResponse(response)
         else:
             raise ValidationError('Form Invalid')
 
