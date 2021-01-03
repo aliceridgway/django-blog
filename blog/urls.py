@@ -6,6 +6,7 @@ urlpatterns = [
     path('add', views.AddPost.as_view(), name='add'),
     path('comment', views_ajax.add_comment, name='add_comment'),
     path('comment/delete', views_ajax.delete_comment, name='delete_comment'),
+    path('post/<int:pk>/comments', views_ajax.get_comments, name='get_comments'),
     path('<str:username>', views.author, name='author'),
     path('<str:username>/<slug:slug>', views.post_detail, name='post_detail'),
     path('<str:username>/<slug:slug>/draft', views.draft, name='draft'),

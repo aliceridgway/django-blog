@@ -16,35 +16,9 @@
     <div>
         <h2>Comments</h2>
 
-
-        <div class="comments-list">
-            {% if comments %}
-            {% for comment in comments %}
-            <div class="card mb-2" id="comment-{{comment.id}}">
-                <div class="card-header d-flex align-items-center justify-content-between">
-                    <p class="m-0">By <b>{{comment.user_from.user.first_name}} {{comment.user_from.user.last_name}}</b>
-                    </p>
-                    <em>{{comment.timestamp}}
-
-                        {% if comment.user_from.user == request.user %}
-                        <form method="POST" data-commentid="{{comment.id}}" data-url="{% url 'delete_comment' %}"
-                            style="display: inline-block;" class="delete-comment-form pl-2">
-                            {% csrf_token %}
-                            <input type="submit" value="delete" class="btn btn-sm btn-outline-danger">
-                        </form>
-                        {% endif %}
-                    </em>
-
-                </div>
-                <div class="card-body">
-                    {{ comment.body }}
-                </div>
-            </div>
-            {% endfor %}
+        <div class="comments-list" data-ajaxurl="{% url 'get_comments' post.id %}">
+            <p><b class="comment-count"></b> comments</p>
         </div>
-        {% else %}
-        <p>No comments yet</p>
-        {% endif %}
 
         {% if post.author != request.user %}
         <div class="card">
@@ -67,6 +41,7 @@
 {% endblock %}
 
 {% block javascript %}
+<script src="{% static 'js/get_comments.js' %}"></script>
 <script src="{% static 'js/add_comment.js' %}"></script>
 <script src="{% static 'js/delete_comment.js' %}"></script>
 {% endblock %}

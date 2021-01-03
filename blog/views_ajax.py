@@ -5,9 +5,38 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.core.exceptions import ValidationError, PermissionDenied
+from django.shortcuts import get_object_or_404
 
 USER_MODEL = get_user_model()
 
+
+def get_comments(request, pk):
+
+    post = get_object_or_404(Post, id=pk)
+
+    comments = post.comments.all()
+    comment_list = []
+
+    for comment in comments:
+
+        user = comment.user_from.user
+
+        comment_list.append({
+            'user_from': {
+                'id': user.id,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+            },
+            'timestamp': comment.timestamp.isoformat(),
+            'body': comment.body
+        })
+
+    response = {
+        'status': 'success',
+        'comments': comment_list
+    }
+
+    return JsonResponse(response)
 
 @require_POST
 @login_required
