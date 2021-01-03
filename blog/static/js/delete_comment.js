@@ -21,7 +21,10 @@ export function deleteComment(e){
 
             const comment = $(`.comment-${commentId}`)
             comment.remove()
+            sessionStorage.removeItem("comments")
 
+            const counter = $('.comment-count')[0]
+            counter.innerText = parseInt(counter.innerText) - 1
         }
     })
 }

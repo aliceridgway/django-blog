@@ -1,6 +1,7 @@
 import { addCommentsToPage } from './get_comments.js'
 
 const form = $('.comment-form')
+const counter = $('.comment-count')[0]
 
 form.submit((e) => {
     e.preventDefault()
@@ -26,6 +27,8 @@ form.submit((e) => {
 
             addCommentsToPage([result.comment])
             sessionStorage.removeItem("comments")
+
+            counter.innerText = parseInt(counter.innerText) + 1
 
         }
     })
